@@ -1,14 +1,21 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.6.0'
+    id 'maven-publish'
 }
 
 group 'com.ludorival'
 version '1.0-SNAPSHOT'
 
-apply plugin: 'maven-publish'
-
 repositories {
     mavenCentral()
+    maven {
+        name = "GitHubPackages"
+        url = "https://maven.pkg.github.com/ludorival/kotlin-tdd"
+        credentials {
+            username = System.getenv("GITHUB_ACTOR")
+            password = System.getenv("GITHUB_TOKEN")
+        }
+    }
 }
 
 test {
