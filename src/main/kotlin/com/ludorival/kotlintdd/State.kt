@@ -64,4 +64,6 @@ class State<A, T>(val action: A, val result: T, val previous: State<A, *>? = nul
         reversedResults<T>().last { it.predicate() }
 
     inline fun <reified T> first(predicate: T.() -> Boolean = { true }) = firstOrNull(predicate)!!
+
+    inline fun <reified T> get(index: Int) = anyReversedResults().let { it[it.size - 1 - index] } as T
 }

@@ -37,6 +37,21 @@ internal class KotlinTDDTest {
     }
 
     @Test
+    fun `I should have access to result by their index`() {
+        given {
+            1
+        } and {
+            2
+        } and {
+            3
+        } `when` {
+            get<Int>(0) * get<Int>(2) - get<Int>(1)
+        } then {
+            assertEquals(1 * 3 - 2, result)
+        }
+    }
+
+    @Test
     fun `I should get all results from the latest chained state`() {
         given {
             1
