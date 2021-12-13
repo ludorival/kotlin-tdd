@@ -23,9 +23,10 @@ hs_err_pid*
 
 # Gradle
 /.gradle/
-gradle.properties
 
 # Idea
 .idea
 /build/
 /out/
+gradle.properties
+gradle.properties.old
