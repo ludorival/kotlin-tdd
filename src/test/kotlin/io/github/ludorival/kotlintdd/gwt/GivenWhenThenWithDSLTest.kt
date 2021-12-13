@@ -1,9 +1,12 @@
-package com.ludorival.kotlintdd
+package io.github.ludorival.kotlintdd.gwt
 
-import com.ludorival.kotlintdd.UnitTest.given
+import io.github.ludorival.kotlintdd.`I expect the result is`
+import io.github.ludorival.kotlintdd.`I perform their sum`
+import io.github.ludorival.kotlintdd.`the number`
+import io.github.ludorival.kotlintdd.gwt.UnitTest.given
 import org.junit.jupiter.api.Test
 
-class KotlinTDDWithDSLTest {
+class GivenWhenThenWithDSLTest {
 
     @Test
     fun `I can write my test with my custom DSL`() {

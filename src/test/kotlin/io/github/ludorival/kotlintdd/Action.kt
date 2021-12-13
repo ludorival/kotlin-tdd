@@ -1,4 +1,4 @@
-package com.ludorival.kotlintdd
+package io.github.ludorival.kotlintdd
 
 class Action {
 

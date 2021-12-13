@@ -1,11 +1,80 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.6.0'
     id 'maven-publish'
+    id 'org.jetbrains.kotlinx.kover' version '0.4.4'
+    id 'signing'
 }
 
-group 'com.ludorival'
+group 'io.github.ludorival'
 version '1.0.0'
 
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'kotlin-tdd'
+            from components.java
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'Kotlin TDD'
+                description = 'Interface to use the Test Driven Design paradigm with internal state management'
+                url = 'https://github.com/ludorival/kotlin-tdd'
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://github.com/ludorival/kotlin-tdd/blob/main/LICENSE'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'ludorival'
+                        name = 'Ludovic Dorival'
+                        email = 'ludorival@gmail.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/ludorival/kotlin-tdd.git'
+                    developerConnection = 'scm:git:ssh://github.com/ludorival/kotlin-tdd.git'
+                    url = 'https://github.com/ludorival/kotlin-tdd'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = "OSSRH"
+            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            credentials {
+                username = System.getenv("MAVEN_USERNAME")
+                password = System.getenv("MAVEN_PASSWORD")
+            }
+
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+}
 repositories {
     mavenCentral()
     maven {
@@ -17,9 +86,17 @@ repositories {
         }
     }
 }
-
 test {
     useJUnitPlatform()
+}
+
+tasks.koverVerify {
+    rule {
+        name = "Minimal line coverage rate in percents"
+        bound {
+            minValue = 93
+        }
+    }
 }
 
 dependencies {
