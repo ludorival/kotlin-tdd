@@ -127,8 +127,8 @@ Let's compare with different approaches when writing tests:
 <thead>
 <tr>
 <th>Basic test</th>
-<th>Cucumber test</th>
 <th>Kotlin-TDD test</th>
+<th>Cucumber test</th>
 </tr>
 </thead>
 <tbody>
@@ -154,18 +154,6 @@ fun shouldInsertANewItemInTodoList() {
 </td>
 <td>
 
-```gherkin
-
-Scenario: I should be able to insert a new item in my todo list
-GIVEN a new Todo list
-AND the following item to add "Eat banana"
-WHEN I add this item in my todo list
-THEN I expect this item is well present in my todo list
-```
-
-</td>
-<td>
-
 ```kotlin
 
 @Test
@@ -183,6 +171,18 @@ fun `I should be able to insert a new item in my todo list`() {
 ```
 
 </td>
+<td>
+
+```gherkin
+
+Scenario: I should be able to insert a new item in my todo list
+GIVEN a new Todo list
+AND the following item to add "Eat banana"
+WHEN I add this item in my todo list
+THEN I expect this item is well present in my todo list
+```
+
+</td>
 </tr>
 <tr>
 <td>
@@ -196,21 +196,21 @@ fun `I should be able to insert a new item in my todo list`() {
 </td>
 <td>
 <ul>
+<li>👍 Readable, No variables, no comments</li>
+<li>👍 No need to create intermediary variable</li>
+<li>👍 No need to learn a new language</li>
+<li>👍 Can use it as well for UT/IT/AT</li>
+<li>👎 Still quite technical but can be improved by creating your own custom DSL</li>
+</ul>
+</td>
+<td>
+<ul>
 <li>👍 Natural language understandable by all</li>
 <li>👍 More focused on functional meaning</li>
 <li>👎 This is yet another language</li>
 <li>👎 More suitable for Acceptance Test, too overkill for a unit test</li>
 <li>👎 Need a more complex setup</li>
 <li>👎 Need to manage ourself the context between steps</li>
-</ul>
-</td>
-<td>
-<ul>
-<li>👍 Readable, No variables, no comments</li>
-<li>👍 No need to create intermediary variable</li>
-<li>👍 No need to learn a new language</li>
-<li>👍 Can use it as well for UT/IT/AT</li>
-<li>👎 Still quite technical but can be improved by creating your own custom DSL</li>
 </ul>
 </td>
 </tr>
