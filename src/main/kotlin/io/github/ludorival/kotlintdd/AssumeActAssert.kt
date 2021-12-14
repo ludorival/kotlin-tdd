@@ -53,4 +53,4 @@ interface AssumeActAssert<A> {
     fun <R> act(block: AAAContext<A, Unit>.() -> R) = Context.initialize(Step.ACT, action, block)
 }
 
-typealias AAAContext<A, T> = BaseContext<A, T, AssumeActAssert.Step>
+typealias AAAContext<A, T> = AssumeActAssert.Context<A, T>

@@ -1,7 +1,5 @@
 package io.github.ludorival.kotlintdd.gwt
 
-import io.github.ludorival.kotlintdd.Action
-import io.github.ludorival.kotlintdd.GWTContext
 import io.github.ludorival.kotlintdd.GivenWhenThen.Step.AND
 import io.github.ludorival.kotlintdd.GivenWhenThen.Step.GIVEN
 import io.github.ludorival.kotlintdd.GivenWhenThen.Step.THEN
@@ -338,36 +336,6 @@ internal class GivenWhenThenTest {
         }
     }
 
-    private fun someUseCase() = given {
-        1
-    } and {
-        2
-    } and {
-        3
-    }
 
-    private fun someNestedUseCase() = given {
-        5
-    } and {
-        someUseCase()
-    } and {
-        6
-    }
-
-    private fun GWTContext<Action, *>.someUseCaseWithExtension() = given {
-        1
-    } and {
-        2
-    } and {
-        3
-    }
-
-    private fun GWTContext<Action, *>.someNestedUseCaseWithExtension() = given {
-        5
-    } and {
-        someUseCaseWithExtension()
-    } and {
-        6
-    }
 
 }

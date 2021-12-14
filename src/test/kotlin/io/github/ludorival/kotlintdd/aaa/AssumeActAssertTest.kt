@@ -1,7 +1,5 @@
 package io.github.ludorival.kotlintdd.aaa
 
-import io.github.ludorival.kotlintdd.AAAContext
-import io.github.ludorival.kotlintdd.Action
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -183,35 +181,4 @@ internal class AssumeActAssertTest {
         }
     }
 
-    private fun someUseCase() = assume {
-        1
-    } and {
-        2
-    } and {
-        3
-    }
-
-    private fun someNestedUseCase() = assume {
-        5
-    } and {
-        someUseCase()
-    } and {
-        6
-    }
-
-    private fun AAAContext<Action, *>.someUseCaseWithExtension() = assume {
-        1
-    } and {
-        2
-    } and {
-        3
-    }
-
-    private fun AAAContext<Action, *>.someNestedUseCaseWithExtension() = assume {
-        5
-    } and {
-        someUseCaseWithExtension()
-    } and {
-        6
-    }
 }
