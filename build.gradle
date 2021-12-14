@@ -8,7 +8,7 @@ plugins {
 }
 
 group 'io.github.ludorival'
-version gitVersion()
+version gitVersion().replace(".dirty", "-SNAPSHOT")
 
 java {
     withJavadocJar()
