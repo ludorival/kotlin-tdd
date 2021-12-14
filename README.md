@@ -46,12 +46,11 @@ Or by using the Assume Act Assert pattern
 
 Kotlin-TDD is available via Maven Central. Just add the dependency to your Maven POM or Gradle build config.
 
-> Look at the latest version on the Version badge on top of this page
 
 **Gradle**
 
 ```groovy
-testCompile "io.github.ludorival:kotlin-tdd:$kotlinTddVersion"
+testCompile "io.github.ludorival:kotlin-tdd:1.1.0"
 ```
 
 **Maven**
@@ -60,7 +59,7 @@ testCompile "io.github.ludorival:kotlin-tdd:$kotlinTddVersion"
 <dependency>
 <groupId>io.github.ludorival</groupId>
 <artifactId>kotlin-tdd</artifactId>
-<version>version</version>
+<version>1.1.0</version>
 <scope>test</scope>
 </dependency>
 ````
