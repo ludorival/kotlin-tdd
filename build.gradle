@@ -59,8 +59,8 @@ publishing {
             name = "OSSRH"
             url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
             credentials {
-                username = findProperty("maven.username") ?: System.getenv("MAVEN_USERNAME")
-                password = findProperty("maven.password") ?: System.getenv("MAVEN_PASSWORD")
+                username = findProperty("maven.username") ?: System.getenv("OSSRH_USERNAME")
+                password = findProperty("maven.password") ?: System.getenv("OSSRH_GPG_SECRET_KEY_PASSWORD")
             }
 
         }
