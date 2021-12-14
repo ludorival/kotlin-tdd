@@ -1,5 +1,7 @@
 package io.github.ludorival.kotlintdd.gwt
 
+import io.github.ludorival.kotlintdd.Action
+import io.github.ludorival.kotlintdd.GWTContext
 import io.github.ludorival.kotlintdd.GivenWhenThen.Step.AND
 import io.github.ludorival.kotlintdd.GivenWhenThen.Step.GIVEN
 import io.github.ludorival.kotlintdd.GivenWhenThen.Step.THEN
@@ -188,7 +190,7 @@ internal class GivenWhenThenTest {
             action.sum(1, 2)
         } then {
             assertEquals(3, result)
-        } then {
+        } and {
             assertEquals(
                 """
                 WHEN -> 3
@@ -206,7 +208,7 @@ internal class GivenWhenThenTest {
             action.sum(result, 3)
         } then {
             assertEquals(6, result)
-        } then {
+        } and {
             assertEquals(
                 """
                 WHEN -> 3
@@ -288,6 +290,54 @@ internal class GivenWhenThenTest {
         }
     }
 
+    @Test
+    fun `I can support nested steps by using extension after the given`() {
+        given {
+            4
+        } and {
+            someUseCaseWithExtension()
+        } `when` {
+            action.sum(results())
+        } then {
+            assertEquals(4 + 1 + 2 + 3, result)
+        } and {
+            assertEquals(
+                """
+                GIVEN -> 4
+                GIVEN -> 1
+                AND -> 2
+                AND -> 3
+                WHEN -> 10
+                THEN -> *Something*""".trimIndent(), this.toString()
+            )
+        }
+    }
+
+    @Test
+    fun `I can support multiple nested by using extension steps`() {
+        given {
+            4
+        } and {
+            someNestedUseCaseWithExtension()
+        } `when` {
+            action.sum(results())
+        } then {
+            assertEquals(4 + 5 + 1 + 2 + 3 + 6, result)
+        } and {
+            assertEquals(
+                """
+                GIVEN -> 4
+                GIVEN -> 5
+                GIVEN -> 1
+                AND -> 2
+                AND -> 3
+                AND -> 6
+                WHEN -> 21
+                THEN -> *Something*""".trimIndent(), this.toString()
+            )
+        }
+    }
+
     private fun someUseCase() = given {
         1
     } and {
@@ -304,5 +354,20 @@ internal class GivenWhenThenTest {
         6
     }
 
+    private fun GWTContext<Action, *>.someUseCaseWithExtension() = given {
+        1
+    } and {
+        2
+    } and {
+        3
+    }
+
+    private fun GWTContext<Action, *>.someNestedUseCaseWithExtension() = given {
+        5
+    } and {
+        someUseCaseWithExtension()
+    } and {
+        6
+    }
 
 }

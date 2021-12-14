@@ -3,10 +3,12 @@ plugins {
     id 'maven-publish'
     id 'org.jetbrains.kotlinx.kover' version '0.4.4'
     id 'signing'
+    id 'io.github.gradle-nexus.publish-plugin' version "1.1.0"
+    id 'com.palantir.git-version' version '0.12.3'
 }
 
 group 'io.github.ludorival'
-version '1.0.0-alpha'
+version gitVersion()
 
 java {
     withJavadocJar()
@@ -68,7 +70,16 @@ publishing {
 signing {
     sign publishing.publications.mavenJava
 }
-
+nexusPublishing {
+    repositories {
+        sonatype {
+            username = findProperty("maven.username") ?: System.getenv("OSSRH_USERNAME")
+            password = findProperty("maven.password") ?: System.getenv("OSSRH_GPG_SECRET_KEY_PASSWORD")
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+        }
+    }
+}
 
 javadoc {
     if(JavaVersion.current().isJava9Compatible()) {

@@ -1,3 +1,8 @@
+Kotlin Test Driven Design
+=========================
+![Build status](https://github.com/ludorival/kotlin-tdd/actions/workflows/build.yaml/badge.svg)
+![Publish status](https://github.com/ludorival/kotlin-tdd/actions/workflows/publish.yaml/badge.svg)
+![Maven Central](https://img.shields.io/maven-central/v/io.github.ludorival/kotlin-tdd)
 > Lightweight library suggesting a TDD implementation with Kotlin
 
 Kotlin-TDD provides a way to write your unit test (or acceptance test)
@@ -41,22 +46,24 @@ Or by using the Assume Act Assert pattern
 
 Kotlin-TDD is available via Maven Central. Just add the dependency to your Maven POM or Gradle build config.
 
+> Look at the latest version on the Version badge on top of this page
+
+**Gradle**
+
+```groovy
+testCompile "io.github.ludorival:kotlin-tdd:$kotlinTddVersion"
+```
+
 **Maven**
 
 ````xml
 <dependency>
 <groupId>io.github.ludorival</groupId>
 <artifactId>kotlin-tdd</artifactId>
-<version>0.0.1</version>
+<version>version</version>
 <scope>test</scope>
 </dependency>
 ````
-
-Gradle
-
-```groovy
-testCompile "io.github.ludorival:kotlin-tdd:0.0.1"
-```
 
 # Usage
 
@@ -433,11 +440,11 @@ Imagine that you have two tests using the same snippet code
     }
 ```
 
-Let's create a function which factorize common code:
+Let's create an extended function which factorize common code:
 
 ```kotlin
 
-    fun commonContext() = 
+    fun GWTContext<Action, *>.commonContext() = 
         given {
             1
         } and {
@@ -469,6 +476,8 @@ Let's create a function which factorize common code:
 ```
 
 > All nested context will be merged into the current context.
+>
+> With this approach, you will be able to
 
 ## Use your custom DSL
 

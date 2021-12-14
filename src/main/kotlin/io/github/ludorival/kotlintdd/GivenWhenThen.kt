@@ -24,12 +24,18 @@ interface GivenWhenThen<A> {
             previous: BaseContext<A, *, Step>?
         ): C = Context(step, action, result, previous) as C
 
-        infix fun <R> and(block: GWTContext<A, T>.() -> R): Context<A, R> = chain(Step.AND, block)
+        infix fun <R> given(block: GWTContext<A, Unit>.() -> R): Context<A, R> = initialize(Step.GIVEN, action, block)
 
-        infix fun <R> `when`(block: GWTContext<A, T>.() -> R): Context<A, R> = chain(Step.WHEN, block)
+        infix fun <R> and(block: GWTContext<A, T>.() -> R): Context<A, R> = chain(Step.AND, block())
 
-        infix fun then(block: GWTContext<A, T>.() -> Unit): Context<A, Unit> = chain(Step.THEN, block)
+        infix fun <R> `when`(block: GWTContext<A, T>.() -> R): Context<A, R> = chain(Step.WHEN, block())
 
+        infix fun then(block: GWTContext<A, T>.() -> Unit): Context<A, Unit> = chain(Step.THEN, block())
+
+        companion object {
+            internal fun <A, R> initialize(step: Step, action: A, block: GWTContext<A, Unit>.() -> R): Context<A, R> =
+                Context(step, action, Unit).let { it.initialize(it.block()) }
+        }
     }
 
     enum class Step : BaseStep {
@@ -41,13 +47,10 @@ interface GivenWhenThen<A> {
 
     val action: A
 
-    private fun <R> initialize(step: Step, block: BaseContext<A, Unit, Step>.() -> R): Context<A, R> =
-        Context(step, action, Unit).initialize(block)
+    fun <R> given(block: GWTContext<A, Unit>.() -> R) = Context.initialize(Step.GIVEN, action, block)
 
-    fun <R> given(block: GWTContext<A, Unit>.() -> R) = initialize(Step.GIVEN, block)
-
-    fun <R> `when`(block: GWTContext<A, Unit>.() -> R) = initialize(Step.WHEN, block)
+    fun <R> `when`(block: GWTContext<A, Unit>.() -> R) = Context.initialize(Step.WHEN, action, block)
 
 }
 
-typealias GWTContext<A, T> = BaseContext<A, T, GivenWhenThen.Step>
+typealias GWTContext<A, T> = GivenWhenThen.Context<A, T>

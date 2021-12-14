@@ -9,14 +9,11 @@ abstract class Context<A, T, S : Step>(
     val previous: Context<A, *, S>? = null
 ) {
 
-
-    protected fun <R, C : Context<A, R, S>> chain(step: S, block: Context<A, T, S>.() -> R): C {
-        val result = block()
+    protected fun <R, C : Context<A, R, S>> chain(step: S, result: R): C {
         return createState(step, result, previous = getPreviousFrom(result))
     }
 
-    internal fun <R, C : Context<A, R, S>> initialize(block: Context<A, T, S>.() -> R): C {
-        val result = block()
+    internal fun <R, C : Context<A, R, S>> initialize(result: R): C {
         return createState(step, result, previous = getPreviousFrom(result, false))
     }
 
