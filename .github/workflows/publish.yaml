@@ -38,5 +38,5 @@ jobs:
       - name: Publish to Maven Central
         uses: gradle/gradle-build-action@4137be6a8bf7d7133955359dbd952c0ca73b1021
         with:
-          arguments: publish closeAndReleaseRepository -Psigning.secretKeyRingFile=./.github/secret/secret-keys.gpg -Psigning.password=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }} -Psigning.keyId=${{ secrets.OSSRH_GPG_SECRET_KEY }}
+          arguments: publish closeAndReleaseStagingRepository -Psigning.secretKeyRingFile=./.github/secret/secret-keys.gpg -Psigning.password=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }} -Psigning.keyId=${{ secrets.OSSRH_GPG_SECRET_KEY }}
 
