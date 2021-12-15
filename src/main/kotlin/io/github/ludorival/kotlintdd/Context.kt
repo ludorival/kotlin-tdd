@@ -23,9 +23,8 @@ abstract class Context<A, T, S : Step>(
         var previous: Context<A, *, S>? = if (chainWithThis) this else null
         if (result is Context<*, *, *>) {
             val list = LinkedList<Context<A, *, S>>()
-            (result as Context<A, *, S>).eachUntil<Any> {
+            (result as Context<A, *, S>).forEach<Any> {
                 list.add(it)
-                false
             }
             if (chainWithThis)
                 list.add(this)
@@ -47,9 +46,9 @@ abstract class Context<A, T, S : Step>(
 
     inline fun <reified T> reversedResults(): List<T> {
         val list = LinkedList<T>()
-        lastOrNull<T> {
-            list.add(it)
-            false
+        forEach<T> {
+            if (it.hasASupportedResult())
+                list.add(it.result)
         }
         return list
     }
@@ -62,20 +61,25 @@ abstract class Context<A, T, S : Step>(
     inline fun <reified T> results() = reversedResults<T>().asReversed()
 
     @Suppress("UNCHECKED_CAST")
-    inline fun <reified T> eachUntil(predicate: (it: Context<A, T, S>) -> Boolean = { false }): Context<A, T, S>? {
+    inline fun <reified T> forEach(action: (it: Context<A, T, S>) -> Unit) {
         var loop: Context<A, *, S>? = this
         while (loop != null) {
-            if (loop.result is T && !loop.hasANestedContext() && predicate(loop as Context<A, T, S>))
-                return loop
+            if (loop.result is T && !loop.hasANestedContext()) {
+                action(loop as Context<A, T, S>)
+            }
             loop = loop.previous
         }
-        return null
     }
 
     inline fun <reified T> lastOrNull(predicate: (it: T) -> Boolean = { true }): T? {
-        return this.eachUntil<T> {
-            it.hasASupportedResult() && predicate(it.result)
-        }?.result
+        var loop: Context<A, *, S>? = this
+        while (loop != null) {
+            if (loop.result is T && !loop.hasANestedContext() && predicate(loop.result as T)) {
+                return loop.result as T
+            }
+            loop = loop.previous
+        }
+        return null
     }
 
     inline fun <reified T> last(predicate: (it: T) -> Boolean = { true }): T = lastOrNull(predicate)!!
@@ -91,9 +95,8 @@ abstract class Context<A, T, S : Step>(
 
     override fun toString(): String {
         val list = LinkedList<String>()
-        eachUntil<Any> {
+        forEach<Any> {
             list.add("${it.step} -> ${it.result.display()}")
-            false
         }
         return list.asReversed().joinToString("\n")
     }

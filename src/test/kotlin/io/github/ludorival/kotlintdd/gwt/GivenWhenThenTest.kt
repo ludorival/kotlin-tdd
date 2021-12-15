@@ -1,11 +1,12 @@
 package io.github.ludorival.kotlintdd.gwt
 
+import io.github.ludorival.kotlintdd.GWTContext
 import io.github.ludorival.kotlintdd.GivenWhenThen.Step.AND
 import io.github.ludorival.kotlintdd.GivenWhenThen.Step.GIVEN
-import io.github.ludorival.kotlintdd.GivenWhenThen.Step.THEN
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import io.github.ludorival.kotlintdd.gwt.UnitTestNoAction.given as givenNoAction
 
 internal class GivenWhenThenTest {
@@ -31,6 +32,15 @@ internal class GivenWhenThenTest {
         }
     }
 
+    @Test
+    fun `A step can return a null value`() {
+        `when` {
+            null
+        } then {
+            assertEquals(false, hasASupportedResult())
+        }
+    }
+
 
     @Test
     fun `I should get the last result with a predicate`() {
@@ -48,7 +58,7 @@ internal class GivenWhenThenTest {
     }
 
     @Test
-    fun `I cannot find none result matching a predicate from the last`() {
+    fun `I cannot find none result matching a predicate when I use lastOrNull`() {
         given {
             1
         } and {
@@ -61,7 +71,86 @@ internal class GivenWhenThenTest {
     }
 
     @Test
-    fun `I can loop on each state until a condition`() {
+    fun `I cannot find none Type result matching a predicate when I use lastOrNull`() {
+        given {
+            1
+        } and {
+            2
+        } and {
+            3
+        } then {
+            assertNull(lastOrNull<Double>())
+        }
+    }
+
+    @Test
+    fun `I should not expect to return the nested context when I use lastOrNull`() {
+        given {
+            someUseCase()
+        } and {
+            2
+        } then {
+            assertNull(lastOrNull<GWTContext<*, *>>())
+        }
+    }
+
+    @Test
+    fun `I can find a result matching a predicate when I use lastOrNull`() {
+        given {
+            1
+        } and {
+            2
+        } and {
+            3
+        } then {
+            assertEquals(2, lastOrNull<Int> { it < 3 })
+        }
+    }
+
+    @Test
+    fun `I should expect an exception when get the last result whereas it has not been found`() {
+        assertThrows<NullPointerException> {
+            given {
+                1
+            } and {
+                2
+            } and {
+                3
+            } then {
+                assertNull(last<Int> { it > 3 })
+            }
+        }
+
+    }
+
+    @Test
+    fun `I cannot find none result matching a predicate from the first`() {
+        given {
+            1
+        } and {
+            2
+        } and {
+            3
+        } then {
+            assertNull(firstOrNull<Int> { it > 3 })
+        }
+    }
+
+    @Test
+    fun `I cannot find result matching a predicate from the first`() {
+        given {
+            1
+        } and {
+            2
+        } and {
+            3
+        } then {
+            assertEquals(2, firstOrNull<Int> { it > 1 })
+        }
+    }
+
+    @Test
+    fun `I can loop on each state`() {
         given {
             1
         } and {
@@ -70,9 +159,8 @@ internal class GivenWhenThenTest {
             3
         } then {
             val list = ArrayList<Any>()
-            eachUntil<Any> {
+            forEach<Any> {
                 list.add(it.step)
-                it.step == THEN
             }
             assertEquals(listOf(AND, AND, GIVEN), list)
         }
@@ -152,6 +240,7 @@ internal class GivenWhenThenTest {
         } and {
             println(result)
         } then {
+            assertEquals(false, hasASupportedResult())
             assertEquals(anyResults(), listOf(1, 2))
         }
     }
@@ -215,6 +304,23 @@ internal class GivenWhenThenTest {
             )
         }
 
+    }
+
+    @Test
+    fun `Nested context are not considered as supported`() {
+        `when` {
+            someUseCase()
+        } then {
+            assertEquals(false, hasASupportedResult())
+        } and {
+            assertEquals(
+                """
+                GIVEN -> 1
+                AND -> 2
+                AND -> 3
+                THEN -> *Something*""".trimIndent(), this.toString()
+            )
+        }
     }
 
     @Test

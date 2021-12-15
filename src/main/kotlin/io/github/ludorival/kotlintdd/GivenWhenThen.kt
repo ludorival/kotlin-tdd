@@ -26,11 +26,11 @@ interface GivenWhenThen<A> {
 
         infix fun <R> given(block: GWTContext<A, Unit>.() -> R): Context<A, R> = initialize(Step.GIVEN, action, block)
 
-        infix fun <R> and(block: GWTContext<A, T>.() -> R): Context<A, R> = chain(Step.AND, block())
+        infix fun <R> and(block: GWTContext<A, T>.() -> R): Context<A, R> = chain(Step.AND, this.block())
 
-        infix fun <R> `when`(block: GWTContext<A, T>.() -> R): Context<A, R> = chain(Step.WHEN, block())
+        infix fun <R> `when`(block: GWTContext<A, T>.() -> R): Context<A, R> = chain(Step.WHEN, this.block())
 
-        infix fun then(block: GWTContext<A, T>.() -> Unit): Context<A, Unit> = chain(Step.THEN, block())
+        infix fun then(block: GWTContext<A, T>.() -> Unit): Context<A, Unit> = chain(Step.THEN, this.block())
 
         companion object {
             internal fun <A, R> initialize(step: Step, action: A, block: GWTContext<A, Unit>.() -> R): Context<A, R> =

@@ -26,11 +26,11 @@ interface AssumeActAssert<A> {
 
         infix fun <R> assume(block: AAAContext<A, Unit>.() -> R): Context<A, R> = initialize(Step.ASSUME, action, block)
 
-        infix fun <R> and(block: AAAContext<A, T>.() -> R): Context<A, R> = chain(Step.AND, block())
+        infix fun <R> and(block: AAAContext<A, T>.() -> R): Context<A, R> = chain(Step.AND, this.block())
 
-        infix fun <R> act(block: AAAContext<A, T>.() -> R): Context<A, R> = chain(Step.ACT, block())
+        infix fun <R> act(block: AAAContext<A, T>.() -> R): Context<A, R> = chain(Step.ACT, this.block())
 
-        infix fun assert(block: AAAContext<A, T>.() -> Unit): Context<A, Unit> = chain(Step.ASSERT, block())
+        infix fun assert(block: AAAContext<A, T>.() -> Unit): Context<A, Unit> = chain(Step.ASSERT, this.block())
 
         companion object {
             internal fun <A, R> initialize(step: Step, action: A, block: AAAContext<A, Unit>.() -> R): Context<A, R> =
