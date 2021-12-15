@@ -2,7 +2,8 @@ Kotlin Test Driven Design
 =========================
 ![Build status](https://github.com/ludorival/kotlin-tdd/actions/workflows/build.yaml/badge.svg)
 ![Publish status](https://github.com/ludorival/kotlin-tdd/actions/workflows/publish.yaml/badge.svg)
-![Maven Central](https://img.shields.io/maven-central/v/io.github.ludorival/kotlin-tdd)
+
+[comment]: <> (![Maven Central]&#40;https://img.shields.io/maven-central/v/io.github.ludorival/kotlin-tdd&#41;)
 > Lightweight library suggesting a TDD implementation with Kotlin
 
 Kotlin-TDD provides a way to write your unit test (or acceptance test)
