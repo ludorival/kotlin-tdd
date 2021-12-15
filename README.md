@@ -2,8 +2,7 @@ Kotlin Test Driven Design
 =========================
 ![Build status](https://github.com/ludorival/kotlin-tdd/actions/workflows/build.yaml/badge.svg)
 ![Publish status](https://github.com/ludorival/kotlin-tdd/actions/workflows/publish.yaml/badge.svg)
-
-[comment]: <> (![Maven Central]&#40;https://img.shields.io/maven-central/v/io.github.ludorival/kotlin-tdd&#41;)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/ludorival/kotlin-tdd)
 > Lightweight library suggesting a TDD implementation with Kotlin
 
 Kotlin-TDD provides a way to write your unit test (or acceptance test)
@@ -51,7 +50,7 @@ Kotlin-TDD is available via Maven Central. Just add the dependency to your Maven
 **Gradle**
 
 ```groovy
-testImplementation "io.github.ludorival:kotlin-tdd:1.1.1"
+testImplementation "io.github.ludorival:kotlin-tdd:$kotlintddVersion"
 ```
 
 **Maven**
@@ -60,7 +59,7 @@ testImplementation "io.github.ludorival:kotlin-tdd:1.1.1"
 <dependency>
 <groupId>io.github.ludorival</groupId>
 <artifactId>kotlin-tdd</artifactId>
-<version>1.1.1</version>
+<version>${kotlintddVersion}</version>
 <scope>test</scope>
 </dependency>
 ````
