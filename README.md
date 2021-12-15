@@ -51,7 +51,7 @@ Kotlin-TDD is available via Maven Central. Just add the dependency to your Maven
 **Gradle**
 
 ```groovy
-testCompile "io.github.ludorival:kotlin-tdd:1.1.0"
+testImplementation "io.github.ludorival:kotlin-tdd:1.1.0"
 ```
 
 **Maven**
