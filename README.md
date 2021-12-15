@@ -64,14 +64,6 @@ testImplementation "io.github.ludorival:kotlin-tdd:$kotlintddVersion"
 </dependency>
 ````
 
-> You may need to update your kotlin version at minimum 1.6.0.
-```groovy
-plugins {
-    ...
-    id "org.jetbrains.kotlin.jvm" version "1.6.0"
-    ...
-}
-```
 
 # Usage
 
