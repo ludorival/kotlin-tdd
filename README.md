@@ -477,7 +477,8 @@ Let's create an extended function which factorize common code:
 
 > All nested context will be merged into the current context.
 >
-> With this approach, you will be able to
+> With this approach, you will be able to factorize common assumptions in your test code.
+> They can also be shared between acceptance tests and unit test.
 
 ## Use your custom DSL
 
@@ -533,3 +534,7 @@ val GWTContext<*, *>.`I add the last item into my todo list` get() =
 val GWTContext<*, *>.`I expect this item is present in my todo list` get() =
     assertTrue(first<TodoList>().contains(last<Item>()))
 ````
+
+# License
+
+MIT License
