@@ -9,32 +9,30 @@ interface AssumeActAssert<A> {
         step: Step,
         action: A,
         result: T,
-        previous: BaseContext<A, *, Step>? = null
+        previous: BaseContext<A, *, Step>? = null,
+        root: BaseContext<A, *, Step>? = null
     ) :
         BaseContext<A, T, Step>(
             step,
             action,
             result,
-            previous
+            previous,
+            root
         ) {
-        @Suppress("UNCHECKED_CAST")
-        override fun <R, C : BaseContext<A, R, Step>> createState(
-            step: Step,
-            result: R,
-            previous: BaseContext<A, *, Step>?
-        ): C = Context(step, action, result, previous) as C
 
-        infix fun <R> assume(block: AAAContext<A, Unit>.() -> R): Context<A, R> = initialize(Step.ASSUME, action, block)
+        infix fun <R> assume(block: AAAContext<A, T>.() -> R): Context<A, R> =
+            chain(Step.ASSUME, this.block(), ::Context)
 
-        infix fun <R> and(block: AAAContext<A, T>.() -> R): Context<A, R> = chain(Step.AND, this.block())
+        infix fun <R> and(block: AAAContext<A, T>.() -> R): Context<A, R> = chain(Step.AND, this.block(), ::Context)
 
-        infix fun <R> act(block: AAAContext<A, T>.() -> R): Context<A, R> = chain(Step.ACT, this.block())
+        infix fun <R> act(block: AAAContext<A, T>.() -> R): Context<A, R> = chain(Step.ACT, this.block(), ::Context)
 
-        infix fun assert(block: AAAContext<A, T>.() -> Unit): Context<A, Unit> = chain(Step.ASSERT, this.block())
+        infix fun assert(block: AAAContext<A, T>.() -> Unit): Context<A, Unit> =
+            chain(Step.ASSERT, this.block(), ::Context)
 
         companion object {
             internal fun <A, R> initialize(step: Step, action: A, block: AAAContext<A, Unit>.() -> R): Context<A, R> =
-                Context(step, action, Unit).let { it.initialize(it.block()) }
+                Context(step, action, Unit).let { it.chain(step, it.block(), ::Context) }
         }
     }
 

@@ -2,6 +2,7 @@ package io.github.ludorival.kotlintdd.aaa
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 internal class AssumeActAssertTest {
 
@@ -138,7 +139,7 @@ internal class AssumeActAssertTest {
         assume {
             4
         } and {
-            someUseCaseWithExtension()
+            someUseCase()
         } act {
             action.sum(results())
         } assert {
@@ -161,7 +162,7 @@ internal class AssumeActAssertTest {
         assume {
             4
         } and {
-            someNestedUseCaseWithExtension()
+            someNestedUseCase()
         } act {
             action.sum(results())
         } assert {
@@ -181,4 +182,20 @@ internal class AssumeActAssertTest {
         }
     }
 
+    @Test
+    fun `I cannot support nested steps if it has been created outside of the current context`() {
+        val exception = assertThrows<IllegalStateException> {
+            assume {
+                someUseCaseWithoutExtension()
+            } assert {
+                println("should not be successful")
+            }
+        }
+        assertEquals(
+            """Cannot accept nested step built without extension function. If you want to reuse a collection step, add an extended function like this: 
+fun AssumeActAssert.Context.sharedSteps() {
+	...
+}""", exception.message
+        )
+    }
 }

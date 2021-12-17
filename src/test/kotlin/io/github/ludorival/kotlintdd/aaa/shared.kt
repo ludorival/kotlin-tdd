@@ -4,7 +4,7 @@ import io.github.ludorival.kotlintdd.AAAContext
 import io.github.ludorival.kotlintdd.Action
 import io.github.ludorival.kotlintdd.aaa.assume as Assume
 
-fun someUseCase() = Assume {
+fun someUseCaseWithoutExtension() = Assume {
     1
 } and {
     2
@@ -12,15 +12,15 @@ fun someUseCase() = Assume {
     3
 }
 
-fun someNestedUseCase() = Assume {
+fun someNestedUseCaseWithoutExtension() = Assume {
     5
 } and {
-    someUseCase()
+    someUseCaseWithoutExtension()
 } and {
     6
 }
 
-fun AAAContext<Action, *>.someUseCaseWithExtension() = assume {
+fun AAAContext<Action, *>.someUseCase() = assume {
     1
 } and {
     2
@@ -28,10 +28,10 @@ fun AAAContext<Action, *>.someUseCaseWithExtension() = assume {
     3
 }
 
-fun AAAContext<Action, *>.someNestedUseCaseWithExtension() = assume {
+fun AAAContext<Action, *>.someNestedUseCase() = assume {
     5
 } and {
-    someUseCaseWithExtension()
+    someUseCase()
 } and {
     6
 }

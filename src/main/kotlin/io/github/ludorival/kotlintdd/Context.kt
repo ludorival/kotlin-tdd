@@ -6,39 +6,40 @@ abstract class Context<A, T, S : Step>(
     val step: S,
     val action: A,
     val result: T,
-    val previous: Context<A, *, S>? = null
+    val previous: Context<A, *, S>? = null,
+    private val root: Context<A, *, S>? = null
 ) {
 
-    protected fun <R, C : Context<A, R, S>> chain(step: S, result: R): C {
-        return createState(step, result, previous = getPreviousFrom(result))
-    }
-
-    internal fun <R, C : Context<A, R, S>> initialize(result: R): C {
-        return createState(step, result, previous = getPreviousFrom(result, false))
-    }
-
+    private val isRoot get() = previous == null && this.result == Unit
 
     @Suppress("UNCHECKED_CAST")
-    private fun <R> getPreviousFrom(result: R, chainWithThis: Boolean = true): Context<A, *, S>? {
-        var previous: Context<A, *, S>? = if (chainWithThis) this else null
-        if (result is Context<*, *, *>) {
-            val list = LinkedList<Context<A, *, S>>()
-            (result as Context<A, *, S>).forEach<Any> {
-                list.add(it)
-            }
-            if (chainWithThis)
-                list.add(this)
-            previous = list.reduceRight { state, acc -> createState(state.step, state.result, acc) }
+    protected fun <R, C : Context<A, R, S>> chain(
+        step: S, result: R, factory: (
+            step: S,
+            action: A,
+            result: R,
+            previous: Context<A, *, S>?,
+            root: Context<A, *, S>?
+        ) -> C
+    ): C {
+        val root: Context<A, *, S> = this.root ?: this
+        val nestedContext: Context<A, *, S>? = if (result.isANestedContext) result as Context<A, *, S> else null
+        val previous = when {
+            nestedContext != null && nestedContext.root != root -> canNotSupportNestedExceptionWithDifferentRoot()
+            nestedContext != null                               -> nestedContext
+            isRoot                                              -> null
+            else                                                -> this
         }
-        return previous
+        return factory(step, action, result, previous, root)
     }
 
-    protected abstract fun <R, C : Context<A, R, S>> createState(
-        step: S,
-        result: R,
-        previous: Context<A, *, S>?
-    ): C
 
+    private fun canNotSupportNestedExceptionWithDifferentRoot(): Nothing = throw IllegalStateException(
+        "Cannot accept nested step built without extension function. " +
+            "If you want to reuse a collection step, add an extended function like this: \n" +
+            "fun ${this::class.qualifiedName?.substringAfter("kotlintdd.")}.sharedSteps() {\n" +
+            "\t...\n}"
+    )
 
     fun anyReversedResults(): List<Any> {
         return reversedResults()
@@ -53,7 +54,9 @@ abstract class Context<A, T, S : Step>(
         return list
     }
 
-    fun hasANestedContext() = result is Context<*, *, *>
+    private val <T> T.isANestedContext get() = this is Context<*, *, *>
+
+    fun hasANestedContext() = result.isANestedContext
     fun hasASupportedResult() = result != null && result != Unit && !hasANestedContext()
 
     fun anyResults() = anyReversedResults().asReversed()

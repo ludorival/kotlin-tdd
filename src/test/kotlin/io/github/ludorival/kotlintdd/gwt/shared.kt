@@ -4,7 +4,7 @@ import io.github.ludorival.kotlintdd.Action
 import io.github.ludorival.kotlintdd.GWTContext
 import io.github.ludorival.kotlintdd.gwt.given as Given
 
-fun someUseCase() = Given {
+fun someUseCaseWithoutExtension() = Given {
     1
 } and {
     2
@@ -12,15 +12,15 @@ fun someUseCase() = Given {
     3
 }
 
-fun someNestedUseCase() = Given {
+fun someNestedUseCaseWithoutExtension() = Given {
     5
 } and {
-    someUseCase()
+    someUseCaseWithoutExtension()
 } and {
     6
 }
 
-fun GWTContext<Action, *>.someUseCaseWithExtension() = given {
+fun GWTContext<Action, *>.someUseCase() = given {
     1
 } and {
     2
@@ -28,10 +28,10 @@ fun GWTContext<Action, *>.someUseCaseWithExtension() = given {
     3
 }
 
-fun GWTContext<Action, *>.someNestedUseCaseWithExtension() = given {
+fun GWTContext<Action, *>.someNestedUseCase() = given {
     5
 } and {
-    someUseCaseWithExtension()
+    someUseCase()
 } and {
     6
 }

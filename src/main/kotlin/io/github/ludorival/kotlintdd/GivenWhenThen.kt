@@ -9,32 +9,28 @@ interface GivenWhenThen<A> {
         step: Step,
         action: A,
         result: T,
-        previous: BaseContext<A, *, Step>? = null
+        previous: BaseContext<A, *, Step>? = null,
+        root: BaseContext<A, *, Step>? = null
     ) :
         BaseContext<A, T, Step>(
             step,
             action,
             result,
-            previous
+            previous,
+            root
         ) {
-        @Suppress("UNCHECKED_CAST")
-        override fun <R, C : BaseContext<A, R, Step>> createState(
-            step: Step,
-            result: R,
-            previous: BaseContext<A, *, Step>?
-        ): C = Context(step, action, result, previous) as C
 
-        infix fun <R> given(block: GWTContext<A, Unit>.() -> R): Context<A, R> = initialize(Step.GIVEN, action, block)
+        infix fun <R> given(block: GWTContext<A, T>.() -> R): Context<A, R> = chain(Step.GIVEN, this.block(), ::Context)
 
-        infix fun <R> and(block: GWTContext<A, T>.() -> R): Context<A, R> = chain(Step.AND, this.block())
+        infix fun <R> and(block: GWTContext<A, T>.() -> R): Context<A, R> = chain(Step.AND, this.block(), ::Context)
 
-        infix fun <R> `when`(block: GWTContext<A, T>.() -> R): Context<A, R> = chain(Step.WHEN, this.block())
+        infix fun <R> `when`(block: GWTContext<A, T>.() -> R): Context<A, R> = chain(Step.WHEN, this.block(), ::Context)
 
-        infix fun then(block: GWTContext<A, T>.() -> Unit): Context<A, Unit> = chain(Step.THEN, this.block())
+        infix fun then(block: GWTContext<A, T>.() -> Unit): Context<A, Unit> = chain(Step.THEN, this.block(), ::Context)
 
         companion object {
             internal fun <A, R> initialize(step: Step, action: A, block: GWTContext<A, Unit>.() -> R): Context<A, R> =
-                Context(step, action, Unit).let { it.initialize(it.block()) }
+                Context(step, action, Unit).let { it.chain(step, it.block(), ::Context) }
         }
     }
 

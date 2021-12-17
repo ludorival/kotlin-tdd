@@ -347,6 +347,23 @@ internal class GivenWhenThenTest {
     }
 
     @Test
+    fun `I cannot support nested steps if it has been created outside of the current context`() {
+        val exception = assertThrows<IllegalStateException> {
+            given {
+                someUseCaseWithoutExtension()
+            } then {
+                println("should not be successful")
+            }
+        }
+        assertEquals(
+            """Cannot accept nested step built without extension function. If you want to reuse a collection step, add an extended function like this: 
+fun GivenWhenThen.Context.sharedSteps() {
+	...
+}""", exception.message
+        )
+    }
+
+    @Test
     fun `I can support nested steps after the given`() {
         given {
             4
@@ -399,7 +416,7 @@ internal class GivenWhenThenTest {
         given {
             4
         } and {
-            someUseCaseWithExtension()
+            someUseCase()
         } `when` {
             action.sum(results())
         } then {
@@ -422,7 +439,7 @@ internal class GivenWhenThenTest {
         given {
             4
         } and {
-            someNestedUseCaseWithExtension()
+            someNestedUseCase()
         } `when` {
             action.sum(results())
         } then {
@@ -442,6 +459,17 @@ internal class GivenWhenThenTest {
         }
     }
 
+    @Test
+    fun `I can access to the previous results inside a nested step using extension function`() {
+        given {
+            1
+        } and {
+            given {
+                assertEquals(listOf(1), anyResults())
+                assertEquals(1, result)
+            }
+        }
+    }
 
 
 }
