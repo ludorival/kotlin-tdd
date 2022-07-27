@@ -2,44 +2,36 @@ package io.github.ludorival.kotlintdd
 
 import java.util.LinkedList
 
-abstract class Context<A, T, S : Step>(
-    val step: S,
-    val action: A,
+abstract class Context<T>(
     val result: T,
-    val previous: Context<A, *, S>? = null,
-    private val root: Context<A, *, S>? = null
+    val key: String
 ) {
 
+    private var _previous: Context<*>? = null
+    val previous get() = _previous
+    private var head: Context<*>? = null
+    private var tail: Context<*>? = null
     private val isRoot get() = previous == null && this.result == Unit
 
-    @Suppress("UNCHECKED_CAST")
-    protected fun <R, C : Context<A, R, S>> chain(
-        step: S, result: R, factory: (
-            step: S,
-            action: A,
-            result: R,
-            previous: Context<A, *, S>?,
-            root: Context<A, *, S>?
-        ) -> C
-    ): C {
-        val root: Context<A, *, S> = this.root ?: this
-        val nestedContext: Context<A, *, S>? = if (result.isANestedContext) result as Context<A, *, S> else null
-        val previous = when {
-            nestedContext != null && nestedContext.root != root -> canNotSupportNestedExceptionWithDifferentRoot()
-            nestedContext != null                               -> nestedContext
-            isRoot                                              -> null
-            else                                                -> this
+    internal fun <V, C : Context<V>> chain(context: C): C {
+        val resolvedRoot = this.head ?: this
+        val that = this
+        val resolvedPrevious: Context<*>? = when {
+            context.result is Context<*> -> context.result.run {
+                this.head?._previous = that
+                this.head = resolvedRoot
+                this
+            }
+            result is Context<*>         -> result
+            isRoot                       -> null
+            else                         -> that
         }
-        return factory(step, action, result, previous, root)
+        return context.apply {
+            this.head = resolvedRoot
+            this._previous = resolvedPrevious
+        }
     }
 
-
-    private fun canNotSupportNestedExceptionWithDifferentRoot(): Nothing = throw IllegalStateException(
-        "Cannot accept nested step built without extension function. " +
-            "If you want to reuse a collection step, add an extended function like this: \n" +
-            "fun ${this::class.qualifiedName?.substringAfter("kotlintdd.")}.sharedSteps() {\n" +
-            "\t...\n}"
-    )
 
     fun anyReversedResults(): List<Any> {
         return reversedResults()
@@ -54,7 +46,7 @@ abstract class Context<A, T, S : Step>(
         return list
     }
 
-    private val <T> T.isANestedContext get() = this is Context<*, *, *>
+    private val <T> T.isANestedContext get() = this is Context<*>
 
     fun hasANestedContext() = result.isANestedContext
     fun hasASupportedResult() = result != null && result != Unit && !hasANestedContext()
@@ -64,18 +56,18 @@ abstract class Context<A, T, S : Step>(
     inline fun <reified T> results() = reversedResults<T>().asReversed()
 
     @Suppress("UNCHECKED_CAST")
-    inline fun <reified T> forEach(action: (it: Context<A, T, S>) -> Unit) {
-        var loop: Context<A, *, S>? = this
+    inline fun <reified T> forEach(action: (it: Context<T>) -> Unit) {
+        var loop: Context<*>? = this
         while (loop != null) {
             if (loop.result is T && !loop.hasANestedContext()) {
-                action(loop as Context<A, T, S>)
+                action(loop as Context<T>)
             }
             loop = loop.previous
         }
     }
 
     inline fun <reified T> lastOrNull(predicate: (it: T) -> Boolean = { true }): T? {
-        var loop: Context<A, *, S>? = this
+        var loop: Context<*>? = this
         while (loop != null) {
             if (loop.result is T && !loop.hasANestedContext() && predicate(loop.result as T)) {
                 return loop.result as T
@@ -99,8 +91,13 @@ abstract class Context<A, T, S : Step>(
     override fun toString(): String {
         val list = LinkedList<String>()
         forEach<Any> {
-            list.add("${it.step} -> ${it.result.display()}")
+            list.add("${it.key} -> ${it.result.display()}")
         }
         return list.asReversed().joinToString("\n")
     }
+
+    companion object {
+        val EMPTY_CONTEXT = object : Context<Unit>(Unit, "") {}
+    }
 }
+

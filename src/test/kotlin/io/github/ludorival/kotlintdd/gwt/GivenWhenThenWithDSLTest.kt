@@ -1,9 +1,7 @@
 package io.github.ludorival.kotlintdd.gwt
 
-import io.github.ludorival.kotlintdd.`I expect the result is`
-import io.github.ludorival.kotlintdd.`I perform their sum`
-import io.github.ludorival.kotlintdd.`the number`
-import io.github.ludorival.kotlintdd.gwt.UnitTest.given
+import io.github.ludorival.kotlintdd.`when`
+import io.github.ludorival.kotlintdd.then
 import org.junit.jupiter.api.Test
 
 class GivenWhenThenWithDSLTest {
@@ -15,9 +13,22 @@ class GivenWhenThenWithDSLTest {
         } and {
             `the number`(2)
         } `when` {
-            `I perform their sum`
+            sum(it.results())
         } then {
-            `I expect the result is`(3)
+            it.result `should be equal to` 3
+        }
+    }
+
+    @Test
+    fun `I should be able to insert a new item in my todo list`() {
+        given {
+            `a todo list`
+        } and {
+            `an item`("Eat banana")
+        } `when` {
+            `I add the last item into my todo list`
+        } then {
+            `I expect this item is present in my todo list`
         }
     }
 }

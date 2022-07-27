@@ -170,9 +170,9 @@ fun `I should be able to insert a new item in my todo list`() {
     } and {
         Item("Eat banana")
     } `when` {
-        first<TodoList>().add(result)
+        it.first<TodoList>().add(it.result)
     } then {
-        assertTrue(first<TodoList>().contains(first<Item>()))
+        assertTrue(it.first<TodoList>().contains(it.first<Item>()))
     }
 }
 ```
@@ -241,9 +241,9 @@ Example :
         given {
             1
         } `when` {
-           result + 2 // result is 1
+           it.result + 2 // result is 1
         } then {
-            assertEquals(3, result) // result is 3
+            assertEquals(3, it.result) // result is 3
         }
     }
 ```
@@ -264,9 +264,9 @@ Example :
         } and {
             2
         }`when` {
-           first<Int>() + result // first<Int>() -> 1
+            it.first<Int>() + it.result // first<Int>() -> 1
         } then {
-            assertEquals(3, result) // result is 3
+            assertEquals(3, it.result) // result is 3
         }
     }
 ```
@@ -283,9 +283,9 @@ This is possible to pass a predicate function as argument to check which is the 
         } and {
             3
         }`when` {
-           first<Int>{ it > 1 } + result // first<Int>{ it > 1 } -> 2
+            it.first<Int>{ it > 1 } + it.result // first<Int>{ it > 1 } -> 2
         } then {
-            assertEquals(2 + 3, result) // result is 5
+            assertEquals(2 + 3, it.result) // result is 5
         }
     }
 ```
@@ -308,9 +308,9 @@ Example :
         } and {
             "a string"
         } `when` {
-           first<Int>() + last<Int>() // 1 + 2
+            it.first<Int>() + it.last<Int>() // 1 + 2
         } then {
-            assertEquals(3, result) // result is 3
+            assertEquals(3, it.result) // result is 3
         }
     }
 ```
@@ -327,9 +327,9 @@ You can also pass a predicate function:
         } and {
             3
         }`when` {
-           result + last<Int> { it < 3 } // 3 + 2
+            it.result + it.last<Int> { it < 3 } // 3 + 2
         } then {
-            assertEquals(3 + 2, result) // result is 5
+            assertEquals(3 + 2, it.result) // result is 5
         }
     }
 ```
@@ -352,7 +352,7 @@ Example
         } and {
             3.5      // index 2
         }`when` {
-           println(get<String>(1)) // print "Hello"
+           println(it.get<String>(1)) // print "Hello"
         }
     }
 ```
@@ -375,9 +375,9 @@ Example
         } and {
             2      
         }`when` {
-           results<Int>().reduce(Int::plus) // results -> [1, 2]
+            it.results<Int>().reduce(Int::plus) // results -> [1, 2]
         } then {
-            assertEquals(3, result)
+            assertEquals(3, it.result)
         }
     }
 ```
@@ -396,9 +396,9 @@ Example
         } and {
             2      
         }`when` {
-           reversedRsults<Int>().reduce(Int::plus) // results -> [2, 1]
+            it.reversedRsults<Int>().reduce(Int::plus) // results -> [2, 1]
         } then {
-            assertEquals(3, result)
+            assertEquals(3, it.result)
         }
     }
 ```
@@ -419,9 +419,9 @@ Imagine that you have two tests using the same snippet code
         } and {
             2
         } `when` {
-            action.sum(results) // 1 + 2
+            action.sum(it.results) // 1 + 2
         } then {
-            assertEquals(1 + 2, result)
+            assertEquals(1 + 2, it.result)
         }
     }
     @Test
@@ -440,11 +440,11 @@ Imagine that you have two tests using the same snippet code
     }
 ```
 
-Let's create an extended function which factorize common code:
+Let's create a function which factorize common code:
 
 ```kotlin
 
-    fun GWTContext<Action, *>.commonContext() = 
+    fun commonContext() = 
         given {
             1
         } and {
@@ -456,9 +456,9 @@ Let's create an extended function which factorize common code:
         given {
             commonContext()
         } `when` {
-            action.sum(results) // 1 + 2
+            action.sum(it.results) // 1 + 2
         } then {
-            assertEquals(1 + 2, result)
+            assertEquals(1 + 2, it.result)
         }
     }
     @Test
@@ -468,9 +468,9 @@ Let's create an extended function which factorize common code:
         } and {
             3     
         }`when` {
-           action.sum(results) // 1 + 2 + 3
+           action.sum(it.results) // 1 + 2 + 3
         } then {
-            assertEquals(1 + 2 + 3, result)
+            assertEquals(1 + 2 + 3, it.result)
         }
     }
 ```
@@ -495,9 +495,9 @@ fun `I should be able to insert a new item in my todo list`() {
     } and {
         Item("Eat banana")
     } `when` {
-        first<TodoList>().add(result)
+        it.first<TodoList>().add(it.result)
     } then {
-        assertTrue(first<TodoList>().contains(first<Item>()))
+        assertTrue(it.first<TodoList>().contains(it.first<Item>()))
     }
 }
 ```
@@ -522,17 +522,29 @@ fun `I should be able to insert a new item in my todo list`() {
 And your DSL can be written like this
 
 ````kotlin
-// DSL.kt
+// Assumption.kt
+class Assumption {
+    val `a todo list` get() = TodoList()
 
-val `a todo list` get() = TodoList()
+    fun `an item`(name: String) = Item(name)
+}
 
-fun `an item`(name: String) = Item(name)
+// Action.kt
+class Action(private val context: Context<*>) {
+    val `I add the last item into my todo list` get() =
+        context.last<TodoList>().items.add(context.last())
+}
 
-val GWTContext<*, *>.`I add the last item into my todo list` get() = 
-    first<TodoList>().add(last<Item>())
+// Assertion.kt
+class Assertion(private val context: Context<*>) {
+    val `I expect this item is present in my todo list`
+        get() = Assertions.assertTrue {
+            context.last<TodoList>().items.contains(
+                context.last()
+            )
+        }
+}
 
-val GWTContext<*, *>.`I expect this item is present in my todo list` get() =
-    assertTrue(first<TodoList>().contains(last<Item>()))
 ````
 
 # License

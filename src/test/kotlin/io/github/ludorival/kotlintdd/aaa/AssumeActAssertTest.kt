@@ -1,8 +1,9 @@
 package io.github.ludorival.kotlintdd.aaa
 
+import io.github.ludorival.kotlintdd.act
+import io.github.ludorival.kotlintdd.assert
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 
 internal class AssumeActAssertTest {
 
@@ -12,16 +13,16 @@ internal class AssumeActAssertTest {
         assume {
             1
         } act {
-            action.sum(result, 2)
+            sum(it.result, 2)
         } assert {
-            assertEquals(3, result)
+            3 `should be equal to` it.result
         } and {
-            assertEquals(
-                """
+
+            """
                 ASSUME -> 1
                 ACT -> 3
-                ASSERT -> *Something*""".trimIndent(), this.toString()
-            )
+                ASSERT -> *Something*""".trimIndent() `should be equal to` it.toString()
+
         }
     }
 
@@ -32,17 +33,15 @@ internal class AssumeActAssertTest {
         } and {
             2
         } act {
-            action.sum(first(), last())
+            sum(it.first(), it.last())
         } assert {
-            assertEquals(3, result)
+            it.result `should be equal to` 3
         } and {
-            assertEquals(
-                """
+            """
                 ASSUME -> 1
                 AND -> 2
                 ACT -> 3
-                ASSERT -> *Something*""".trimIndent(), this.toString()
-            )
+                ASSERT -> *Something*""".trimIndent() `should be equal to` it.toString()
         }
     }
 
@@ -50,14 +49,14 @@ internal class AssumeActAssertTest {
     @Test
     fun `I can use directly the act instead of the assume`() {
         act {
-            action.sum(1, 2)
+            sum(1, 2)
         } assert {
-            assertEquals(result, 3)
+            assertEquals(it.result, 3)
         } and {
             assertEquals(
                 """
                 ACT -> 3
-                ASSERT -> *Something*""".trimIndent(), this.toString()
+                ASSERT -> *Something*""".trimIndent(), it.toString()
             )
         }
     }
@@ -66,13 +65,13 @@ internal class AssumeActAssertTest {
     @Test
     fun `I can support nested steps from the ASSUME`() {
         assume {
-            someUseCase()
+            someUseCaseWithoutExtension()
         } and {
             4
         } act {
-            action.sum(results())
+            sum(it.results())
         } assert {
-            assertEquals(result, 1 + 2 + 3 + 4)
+            assertEquals(it.result, 1 + 2 + 3 + 4)
         } and {
             assertEquals(
                 """
@@ -81,7 +80,7 @@ internal class AssumeActAssertTest {
                 AND -> 3
                 AND -> 4
                 ACT -> 10
-                ASSERT -> *Something*""".trimIndent(), this.toString()
+                ASSERT -> *Something*""".trimIndent(), it.toString()
             )
         }
     }
@@ -91,11 +90,11 @@ internal class AssumeActAssertTest {
         assume {
             4
         } and {
-            someUseCase()
+            someUseCaseWithoutExtension()
         } act {
-            action.sum(results())
+            sum(it.results())
         } assert {
-            assertEquals(result, 4 + 1 + 2 + 3)
+            assertEquals(it.result, 4 + 1 + 2 + 3)
         } and {
             assertEquals(
                 """
@@ -104,7 +103,7 @@ internal class AssumeActAssertTest {
                 AND -> 2
                 AND -> 3
                 ACT -> 10
-                ASSERT -> *Something*""".trimIndent(), this.toString()
+                ASSERT -> *Something*""".trimIndent(), it.toString()
             )
         }
     }
@@ -114,11 +113,11 @@ internal class AssumeActAssertTest {
         assume {
             4
         } and {
-            someNestedUseCase()
+            someNestedUseCaseWithoutExtension()
         } act {
-            action.sum(results())
+            sum(it.results())
         } assert {
-            assertEquals(4 + 5 + 1 + 2 + 3 + 6, result)
+            assertEquals(4 + 5 + 1 + 2 + 3 + 6, it.result)
         } and {
             assertEquals(
                 """
@@ -129,7 +128,7 @@ internal class AssumeActAssertTest {
                 AND -> 3
                 AND -> 6
                 ACT -> 21
-                ASSERT -> *Something*""".trimIndent(), this.toString()
+                ASSERT -> *Something*""".trimIndent(), it.toString()
             )
         }
     }
@@ -139,11 +138,11 @@ internal class AssumeActAssertTest {
         assume {
             4
         } and {
-            someUseCase()
+            someUseCaseWithoutExtension()
         } act {
-            action.sum(results())
+            sum(it.results())
         } assert {
-            assertEquals(result, 4 + 1 + 2 + 3)
+            assertEquals(it.result, 4 + 1 + 2 + 3)
         } and {
             assertEquals(
                 """
@@ -152,7 +151,7 @@ internal class AssumeActAssertTest {
                 AND -> 2
                 AND -> 3
                 ACT -> 10
-                ASSERT -> *Something*""".trimIndent(), this.toString()
+                ASSERT -> *Something*""".trimIndent(), it.toString()
             )
         }
     }
@@ -162,11 +161,11 @@ internal class AssumeActAssertTest {
         assume {
             4
         } and {
-            someNestedUseCase()
+            someNestedUseCaseWithoutExtension()
         } act {
-            action.sum(results())
+            sum(it.results())
         } assert {
-            assertEquals(4 + 5 + 1 + 2 + 3 + 6, result)
+            assertEquals(4 + 5 + 1 + 2 + 3 + 6, it.result)
         } and {
             assertEquals(
                 """
@@ -177,25 +176,9 @@ internal class AssumeActAssertTest {
                 AND -> 3
                 AND -> 6
                 ACT -> 21
-                ASSERT -> *Something*""".trimIndent(), this.toString()
+                ASSERT -> *Something*""".trimIndent(), it.toString()
             )
         }
     }
 
-    @Test
-    fun `I cannot support nested steps if it has been created outside of the current context`() {
-        val exception = assertThrows<IllegalStateException> {
-            assume {
-                someUseCaseWithoutExtension()
-            } assert {
-                println("should not be successful")
-            }
-        }
-        assertEquals(
-            """Cannot accept nested step built without extension function. If you want to reuse a collection step, add an extended function like this: 
-fun AssumeActAssert.Context.sharedSteps() {
-	...
-}""", exception.message
-        )
-    }
 }

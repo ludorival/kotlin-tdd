@@ -1,12 +1,17 @@
 package io.github.ludorival.kotlintdd.aaa
 
-import io.github.ludorival.kotlintdd.AAAContext
-import io.github.ludorival.kotlintdd.Action
-import io.github.ludorival.kotlintdd.AssumeActAssert
+import io.github.ludorival.kotlintdd.BasePattern
+import io.github.ludorival.kotlintdd.Context
+import io.github.ludorival.kotlintdd.dsl.Action
+import io.github.ludorival.kotlintdd.dsl.Assertion
+import io.github.ludorival.kotlintdd.dsl.Assumption
 
-object UnitTest : AssumeActAssert<Action> {
-    override val action: Action = Action()
+object UnitTest : BasePattern<Assumption, Action, Assertion>() {
+    override fun assumptionReceiver(context: Context<*>): Assumption = Assumption()
+    override fun actionReceiver(context: Context<*>): Action = Action(context)
+    override fun assertionReceiver(context: Context<*>): Assertion = Assertion(context)
+
 }
 
-fun <R> assume(block: AAAContext<Action, Unit>.() -> R) = UnitTest.assume(block)
-fun <R> act(block: AAAContext<Action, Unit>.() -> R) = UnitTest.act(block)
+fun <R> assume(block: Assumption.() -> R) = UnitTest.assume("ASSUME", block)
+fun <R> act(block: Action.() -> R) = UnitTest.act("ACT", block)

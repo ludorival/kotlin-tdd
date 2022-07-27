@@ -1,8 +1,8 @@
 package io.github.ludorival.kotlintdd.gwt
 
-import io.github.ludorival.kotlintdd.GWTContext
-import io.github.ludorival.kotlintdd.GivenWhenThen.Step.AND
-import io.github.ludorival.kotlintdd.GivenWhenThen.Step.GIVEN
+import io.github.ludorival.kotlintdd.Context
+import io.github.ludorival.kotlintdd.`when`
+import io.github.ludorival.kotlintdd.then
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
@@ -18,16 +18,16 @@ internal class GivenWhenThenTest {
         } and {
             2
         } `when` {
-            action.sum(first(), last())
+            sum(it.first(), it.last())
         } then {
-            assertEquals(3, result)
+            assertEquals(3, it.result)
         } and {
             assertEquals(
                 """
                 GIVEN -> 1
                 AND -> 2
                 WHEN -> 3
-                THEN -> *Something*""".trimIndent(), this.toString()
+                THEN -> *Something*""".trimIndent(), it.toString()
             )
         }
     }
@@ -37,7 +37,7 @@ internal class GivenWhenThenTest {
         `when` {
             null
         } then {
-            assertEquals(false, hasASupportedResult())
+            assertEquals(false, it.hasASupportedResult())
         }
     }
 
@@ -51,9 +51,9 @@ internal class GivenWhenThenTest {
         } and {
             3
         } `when` {
-            action.sum(first(), last { it == 2 })
+            sum(it.first(), it.last { it == 2 })
         } then {
-            assertEquals(3, result)
+            assertEquals(3, it.result)
         }
     }
 
@@ -66,7 +66,7 @@ internal class GivenWhenThenTest {
         } and {
             3
         } then {
-            assertNull(lastOrNull<Int> { it > 3 })
+            assertNull(it.lastOrNull<Int> { it > 3 })
         }
     }
 
@@ -79,7 +79,7 @@ internal class GivenWhenThenTest {
         } and {
             3
         } then {
-            assertNull(lastOrNull<Double>())
+            assertNull(it.lastOrNull<Double>())
         }
     }
 
@@ -90,7 +90,7 @@ internal class GivenWhenThenTest {
         } and {
             2
         } then {
-            assertNull(lastOrNull<GWTContext<*, *>>())
+            assertNull(it.lastOrNull<Context<*>>())
         }
     }
 
@@ -102,8 +102,8 @@ internal class GivenWhenThenTest {
             2
         } and {
             3
-        } then {
-            assertEquals(2, lastOrNull<Int> { it < 3 })
+        } then { context ->
+            assertEquals(2, context.lastOrNull<Int> { it < 3 })
         }
     }
 
@@ -116,8 +116,8 @@ internal class GivenWhenThenTest {
                 2
             } and {
                 3
-            } then {
-                assertNull(last<Int> { it > 3 })
+            } then { context ->
+                assertNull(context.last<Int> { it > 3 })
             }
         }
 
@@ -131,8 +131,8 @@ internal class GivenWhenThenTest {
             2
         } and {
             3
-        } then {
-            assertNull(firstOrNull<Int> { it > 3 })
+        } then { context ->
+            assertNull(context.firstOrNull<Int> { it > 3 })
         }
     }
 
@@ -144,8 +144,8 @@ internal class GivenWhenThenTest {
             2
         } and {
             3
-        } then {
-            assertEquals(2, firstOrNull<Int> { it > 1 })
+        } then { context ->
+            assertEquals(2, context.firstOrNull<Int> { it > 1 })
         }
     }
 
@@ -157,12 +157,12 @@ internal class GivenWhenThenTest {
             2
         } and {
             3
-        } then {
+        } then { context ->
             val list = ArrayList<Any>()
-            forEach<Any> {
-                list.add(it.step)
+            context.forEach<Any> {
+                list.add(it.key)
             }
-            assertEquals(listOf(AND, AND, GIVEN), list)
+            assertEquals(listOf("AND", "AND", "GIVEN"), list)
         }
     }
 
@@ -175,9 +175,9 @@ internal class GivenWhenThenTest {
         } and {
             3
         } `when` {
-            get<Int>(0) * get<Int>(2) - get<Int>(1)
+            it.get<Int>(0) * it.get<Int>(2) - it.get<Int>(1)
         } then {
-            assertEquals(1 * 3 - 2, result)
+            assertEquals(1 * 3 - 2, it.result)
         }
     }
 
@@ -188,9 +188,9 @@ internal class GivenWhenThenTest {
         } and {
             2
         } `when` {
-            action.sum(results())
+            sum(it.results())
         } then {
-            assertEquals(3, result)
+            assertEquals(3, it.result)
         }
     }
 
@@ -199,9 +199,9 @@ internal class GivenWhenThenTest {
         givenNoAction {
             1
         } `when` {
-            result * 3
+            it.result * 3
         } then {
-            assertEquals(3, result)
+            assertEquals(3, it.result)
         }
     }
 
@@ -214,7 +214,7 @@ internal class GivenWhenThenTest {
         } and {
             "3"
         } then {
-            assertEquals(anyResults(), listOf(1, 2, "3"))
+            assertEquals(it.anyResults(), listOf(1, 2, "3"))
         }
     }
 
@@ -227,7 +227,7 @@ internal class GivenWhenThenTest {
         } and {
             "3"
         } then {
-            assertEquals(anyReversedResults(), listOf("3", 2, 1))
+            assertEquals(it.anyReversedResults(), listOf("3", 2, 1))
         }
     }
 
@@ -238,10 +238,10 @@ internal class GivenWhenThenTest {
         } and {
             2
         } and {
-            println(result)
+            println(it.result)
         } then {
-            assertEquals(false, hasASupportedResult())
-            assertEquals(anyResults(), listOf(1, 2))
+            assertEquals(false, it.hasASupportedResult())
+            assertEquals(it.anyResults(), listOf(1, 2))
         }
     }
 
@@ -252,9 +252,9 @@ internal class GivenWhenThenTest {
         } and {
             10
         } `when` {
-            action.divide(results())  // 100 / 10
+            divide(it.results())  // 100 / 10
         } then {
-            assertEquals(10, result)
+            assertEquals(10, it.result)
         }
     }
 
@@ -265,23 +265,23 @@ internal class GivenWhenThenTest {
         } and {
             10
         } `when` {
-            action.divide(reversedResults())  // 10 / 100
+            divide(it.reversedResults())  // 10 / 100
         } then {
-            assertEquals(10 / 100, result)
+            assertEquals(10 / 100, it.result)
         }
     }
 
     @Test
     fun `I can use directly the when instead of the given`() {
         `when` {
-            action.sum(1, 2)
+            sum(1, 2)
         } then {
-            assertEquals(3, result)
+            assertEquals(3, it.result)
         } and {
             assertEquals(
                 """
                 WHEN -> 3
-                THEN -> *Something*""".trimIndent(), this.toString()
+                THEN -> *Something*""".trimIndent(), it.toString()
             )
         }
     }
@@ -290,17 +290,17 @@ internal class GivenWhenThenTest {
     @Test
     fun `I can use when + and + then`() {
         `when` {
-            action.sum(1, 2)
+            sum(1, 2)
         } and {
-            action.sum(result, 3)
+            sum(it.result, 3)
         } then {
-            assertEquals(6, result)
+            assertEquals(6, it.result)
         } and {
             assertEquals(
                 """
                 WHEN -> 3
                 AND -> 6
-                THEN -> *Something*""".trimIndent(), this.toString()
+                THEN -> *Something*""".trimIndent(), it.toString()
             )
         }
 
@@ -311,14 +311,14 @@ internal class GivenWhenThenTest {
         `when` {
             someUseCase()
         } then {
-            assertEquals(false, hasASupportedResult())
+            assertEquals(false, it.hasASupportedResult())
         } and {
             assertEquals(
                 """
                 GIVEN -> 1
                 AND -> 2
                 AND -> 3
-                THEN -> *Something*""".trimIndent(), this.toString()
+                THEN -> *Something*""".trimIndent(), it.toString()
             )
         }
     }
@@ -330,9 +330,9 @@ internal class GivenWhenThenTest {
         } and {
             4
         } `when` {
-            action.sum(results())
+            sum(it.results())
         } then {
-            assertEquals(1 + 2 + 3 + 4, result)
+            assertEquals(1 + 2 + 3 + 4, it.result)
         } and {
             assertEquals(
                 """
@@ -341,26 +341,9 @@ internal class GivenWhenThenTest {
                 AND -> 3
                 AND -> 4
                 WHEN -> 10
-                THEN -> *Something*""".trimIndent(), this.toString()
+                THEN -> *Something*""".trimIndent(), it.toString()
             )
         }
-    }
-
-    @Test
-    fun `I cannot support nested steps if it has been created outside of the current context`() {
-        val exception = assertThrows<IllegalStateException> {
-            given {
-                someUseCaseWithoutExtension()
-            } then {
-                println("should not be successful")
-            }
-        }
-        assertEquals(
-            """Cannot accept nested step built without extension function. If you want to reuse a collection step, add an extended function like this: 
-fun GivenWhenThen.Context.sharedSteps() {
-	...
-}""", exception.message
-        )
     }
 
     @Test
@@ -370,9 +353,9 @@ fun GivenWhenThen.Context.sharedSteps() {
         } and {
             someUseCase()
         } `when` {
-            action.sum(results())
+            sum(it.results())
         } then {
-            assertEquals(4 + 1 + 2 + 3, result)
+            assertEquals(4 + 1 + 2 + 3, it.result)
         } and {
             assertEquals(
                 """
@@ -381,7 +364,7 @@ fun GivenWhenThen.Context.sharedSteps() {
                 AND -> 2
                 AND -> 3
                 WHEN -> 10
-                THEN -> *Something*""".trimIndent(), this.toString()
+                THEN -> *Something*""".trimIndent(), it.toString()
             )
         }
     }
@@ -393,9 +376,9 @@ fun GivenWhenThen.Context.sharedSteps() {
         } and {
             someNestedUseCase()
         } `when` {
-            action.sum(results())
+            sum(it.results())
         } then {
-            assertEquals(4 + 5 + 1 + 2 + 3 + 6, result)
+            assertEquals(4 + 5 + 1 + 2 + 3 + 6, it.result)
         } and {
             assertEquals(
                 """
@@ -406,7 +389,7 @@ fun GivenWhenThen.Context.sharedSteps() {
                 AND -> 3
                 AND -> 6
                 WHEN -> 21
-                THEN -> *Something*""".trimIndent(), this.toString()
+                THEN -> *Something*""".trimIndent(), it.toString()
             )
         }
     }
@@ -418,9 +401,9 @@ fun GivenWhenThen.Context.sharedSteps() {
         } and {
             someUseCase()
         } `when` {
-            action.sum(results())
+            sum(it.results())
         } then {
-            assertEquals(4 + 1 + 2 + 3, result)
+            assertEquals(4 + 1 + 2 + 3, it.result)
         } and {
             assertEquals(
                 """
@@ -429,7 +412,7 @@ fun GivenWhenThen.Context.sharedSteps() {
                 AND -> 2
                 AND -> 3
                 WHEN -> 10
-                THEN -> *Something*""".trimIndent(), this.toString()
+                THEN -> *Something*""".trimIndent(), it.toString()
             )
         }
     }
@@ -441,9 +424,18 @@ fun GivenWhenThen.Context.sharedSteps() {
         } and {
             someNestedUseCase()
         } `when` {
-            action.sum(results())
+            assertEquals(
+                """
+                GIVEN -> 4
+                GIVEN -> 5
+                GIVEN -> 1
+                AND -> 2
+                AND -> 3
+                AND -> 6""".trimIndent(), it.toString()
+            )
+            sum(it.results())
         } then {
-            assertEquals(4 + 5 + 1 + 2 + 3 + 6, result)
+            assertEquals(4 + 5 + 1 + 2 + 3 + 6, it.result)
         } and {
             assertEquals(
                 """
@@ -454,7 +446,7 @@ fun GivenWhenThen.Context.sharedSteps() {
                 AND -> 3
                 AND -> 6
                 WHEN -> 21
-                THEN -> *Something*""".trimIndent(), this.toString()
+                THEN -> *Something*""".trimIndent(), it.toString()
             )
         }
     }
@@ -465,8 +457,8 @@ fun GivenWhenThen.Context.sharedSteps() {
             1
         } and {
             given {
-                assertEquals(listOf(1), anyResults())
-                assertEquals(1, result)
+                assertEquals(listOf(1), it.anyResults())
+                assertEquals(1, it.result)
             }
         }
     }
