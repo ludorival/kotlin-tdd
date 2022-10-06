@@ -1,7 +1,11 @@
 package io.github.ludorival.kotlintdd
 
 
-abstract class BasePattern<R1, R2, R3> {
+abstract class BasePattern<R1, R2, R3>(
+    private val assumption: R1? = null,
+    private val action: R2? = null,
+    private val assertion: R3? = null
+) {
 
     class AssumptionContext<T, R1, R2, R3> internal constructor(
         private val pattern: BasePattern<R1, R2, R3>,
@@ -50,9 +54,9 @@ abstract class BasePattern<R1, R2, R3> {
 
     }
 
-    abstract fun assumptionReceiver(context: Context<*>): R1
-    abstract fun actionReceiver(context: Context<*>): R2
-    abstract fun assertionReceiver(context: Context<*>): R3
+    open fun assumptionReceiver(context: Context<*>): R1 = assumption ?: error("Expect a valid assumption object")
+    open fun actionReceiver(context: Context<*>): R2 = action ?: error("Expect a valid action object")
+    open fun assertionReceiver(context: Context<*>): R3 = assertion ?: error("Expect a valid assertion object")
 
 
     fun <V> assume(key: String, block: R1.() -> V): AssumptionContext<V, R1, R2, R3> =
