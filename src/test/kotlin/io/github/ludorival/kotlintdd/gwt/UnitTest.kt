@@ -7,8 +7,8 @@ import io.github.ludorival.kotlintdd.dsl.Assertion
 import io.github.ludorival.kotlintdd.dsl.Assumption
 
 object UnitTest : GivenWhenThen<Assumption, Action, Assertion>(assumption = Assumption()) {
-    override fun actionReceiver(context: Context<*>): Action = Action(context)
-    override fun assertionReceiver(context: Context<*>): Assertion = Assertion(context)
+    override fun <T> actionReceiver(context: Context<T>): Action = Action(context)
+    override fun <T> assertionReceiver(context: Context<T>): Assertion = Assertion(context)
 }
 
 fun <R> given(block: Assumption.() -> R) = UnitTest.given(block)
