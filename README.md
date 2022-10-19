@@ -11,33 +11,44 @@ as you will write an acceptance criteria in natural english language.
 Write your test by following the Given When Then pattern.
 
 ````kotlin
-  @Test
-fun `I can write my test with my custom DSL`() {
-    given {
-        1
-    } and {
-        2
-    } `when` {
-        `I perform their sum`
-    } then {
-        `I expect the result is`(3)
+import io.github.ludorival.kotlintdd.SimpleGivenWhenThen.given
+
+class MyTest {
+
+    @Test
+    fun `I can write my test with my custom DSL`() {
+        given {
+            1
+        } and {
+            2
+        } `when` {
+            `I perform their sum`
+        } then {
+            `I expect the result is`(3)
+        }
     }
+
 }
 ````
 
 Or by using the Assume Act Assert pattern
 
 ````kotlin
-  @Test
-fun `I can write my test with my custom DSL`() {
-    assume {
-        `the number`(1)
-    } and {
-        `the number`(2)
-    } act {
-        `I perform their sum`
-    } assert {
-        `I expect the result is`(3)
+import io.github.ludorival.kotlintdd.SimpleAssumeActAssert.assume
+
+class MyTest {
+
+    @Test
+    fun `I can write my test with my custom DSL`() {
+        assume {
+            `the number`(1)
+        } and {
+            `the number`(2)
+        } act {
+            `I perform their sum`
+        } assert {
+            `I expect the result is`(3)
+        }
     }
 }
 ````
@@ -62,85 +73,6 @@ testImplementation "io.github.ludorival:kotlin-tdd:$kotlintddVersion"
     <version>${kotlintddVersion}</version>
     <scope>test</scope>
 </dependency>
-````
-
-# Usage
-
-Kotlin-TDD provides a useful mechanism to save the test context **without managing static values**.
-
-![Steps!](http://www.plantuml.com/plantuml/png/SoWkIImgAStDuUAArefLqDMrKt0iBYxDBIZ9pC_ZGZ0LK2Ii51ppKb1aGTB943t9SFN92BKGDipyr2AmKZXB0IQCq03cmlK0tSRba9gN0dGe0000 "")
-
-Steps can be organized by three contexts:
-
-- Assumption: a list of operations to create assumptions
-- Action: a list of operations to mutate assumptions to a result
-- Assertion: a list of operations to verify the result
-
-Kotlin-TDD allows to have access to an *Assumption*, *Action* and * Assertion* instance in each step. This is very
-convenient to organize your tests in function of what it produces. Let's create a new class Assumption for example
-
-```kotlin
-
-class Assumption {
-
-    val `a todo list` get() = TodoList()
-
-    fun `an item`(name: String) = TodoList.Item(name)
-}
-
-```
-
-An Action class
-
-````kotlin
-class Action {
-
-    fun sum(value1: Int, value2: Int) = value1 + value2
-
-    fun sum(list: List<Int>) = list.reduce(Int::plus)
-
-    fun divide(list: List<Int>) = list.reduce(Int::div)
-
-}
-````
-
-And an Assumption class
-
-According to your flavor (GWT or AAA pattern), you will have to implement a dedicated interface.
-
-**Given When Then**
-
-Create a file named `UnitTest.kt` for example and extends the class `GivenWhenThen`:
-
-````kotlin
-// UnitTest.kt
-object UnitTest : GivenWhenThen<Assumption, Action, Assertion>(
-    assumption = Assumption(),
-    action = Action(),
-    assertion = Assertion()
-) 
-
-// defines the entrypoint on file-level to be automatically recognized by your IDE
-fun <R> given(block: Assumption.() -> R) = UnitTest.given(block)
-fun <R> `when`(block: Action.() -> R) = UnitTest.`when`(block)
-````
-
-**Assume Act Assert**
-
-This time you will have to extend the class `AssumeActAssert`:
-
-````kotlin
-// UnitTest.kt
-
-object UnitTest : AssumeActAssert<Assumption, Action, Assertion>(
-    assumption = Assumption(),
-    action = Action(),
-    assertion = Assertion()
-)
-
-// defines the entrypoint on file-level to be automatically recognized by your IDE
-fun <R> assume(block: AAAContext<Action, Unit>.() -> R) = UnitTest.assume(block)
-fun <R> act(block: AAAContext<Action, Unit>.() -> R) = UnitTest.act(block)
 ````
 
 # Presentation
@@ -249,6 +181,16 @@ THEN I expect this item is well present in my todo list
 </table>
 
 # Features
+
+Kotlin-TDD provides a useful mechanism to save the test context **without managing static values**.
+
+![Steps!](http://www.plantuml.com/plantuml/png/SoWkIImgAStDuUAArefLqDMrKt0iBYxDBIZ9pC_ZGZ0LK2Ii51ppKb1aGTB943t9SFN92BKGDipyr2AmKZXB0IQCq03cmlK0tSRba9gN0dGe0000 "")
+
+Steps can be organized by three contexts:
+
+- Assumption: a list of operations to create assumptions
+- Action: a list of operations to mutate assumptions to a result
+- Assertion: a list of operations to verify the result
 
 As you can see, Kotlin TDD has its own data structure closed to a Linked list to manage the context. There are some
 useful operations what you can do inside a context.
@@ -508,6 +450,73 @@ fun test2() {
 
 ## Use your custom DSL
 
+Kotlin-TDD allows to have access to an *Assumption*, *Action* and * Assertion* instance in each step. This is very
+convenient to organize your tests in function of what it produces. Let's create a new class Assumption for example
+
+```kotlin
+
+class Assumption : WithContext() {
+
+    val `a todo list` get() = TodoList()
+
+    fun `an item`(name: String) = TodoList.Item(name)
+}
+
+```
+
+An Action class
+
+````kotlin
+class Action : WithContext() {
+
+    fun sum(value1: Int, value2: Int) = value1 + value2
+
+    fun sum(list: List<Int>) = list.reduce(Int::plus)
+
+    fun divide(list: List<Int>) = list.reduce(Int::div)
+
+}
+````
+
+And an Assumption class
+
+According to your flavor (GWT or AAA pattern), you will have to implement a dedicated interface.
+
+**Given When Then**
+
+Create a file named `UnitTest.kt` for example and extends the class `GivenWhenThen`:
+
+````kotlin
+// UnitTest.kt
+object UnitTest : GivenWhenThen<Assumption, Action, Assertion>(
+    assumption = Assumption(),
+    action = Action(),
+    assertion = Assertion()
+)
+
+// defines the entrypoint on file-level to be automatically recognized by your IDE
+fun <R> given(block: Assumption.() -> R) = UnitTest.given(block)
+fun <R> `when`(block: Action.() -> R) = UnitTest.`when`(block)
+````
+
+**Assume Act Assert**
+
+This time you will have to extend the class `AssumeActAssert`:
+
+````kotlin
+// UnitTest.kt
+
+object UnitTest : AssumeActAssert<Assumption, Action, Assertion>(
+    assumption = Assumption(),
+    action = Action(),
+    assertion = Assertion()
+)
+
+// defines the entrypoint on file-level to be automatically recognized by your IDE
+fun <R> assume(block: AAAContext<Action, Unit>.() -> R) = UnitTest.assume(block)
+fun <R> act(block: AAAContext<Action, Unit>.() -> R) = UnitTest.act(block)
+````
+
 In the various examples we saw, the step do not write in a natural language. Thanks to powerful extendability of Kotlin,
 we can provide our custom DSL.
 
@@ -549,25 +558,25 @@ And your DSL can be written like this
 
 ````kotlin
 // Assumption.kt
-class Assumption {
+class Assumption : WithContext() {
     val `a todo list` get() = TodoList()
 
     fun `an item`(name: String) = Item(name)
 }
 
 // Action.kt
-class Action(private val context: Context<*>) {
+class Action : WithContext() {
     val `I add the last item into my todo list`
-        get() =
-            context.last<TodoList>().items.add(context.last())
+        get() = // currentContext allows you to get the current context
+            currentContext.last<TodoList>().items.add(currentContext.last())
 }
 
 // Assertion.kt
-class Assertion(private val context: Context<*>) {
+class Assertion : WithContext() {
     val `I expect this item is present in my todo list`
         get() = Assertions.assertTrue {
-            context.last<TodoList>().items.contains(
-                context.last()
+            currentContext.last<TodoList>().items.contains(
+                currentContext.last()
             )
         }
 }

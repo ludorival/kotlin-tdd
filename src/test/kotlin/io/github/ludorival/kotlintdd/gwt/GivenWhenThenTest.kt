@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import io.github.ludorival.kotlintdd.gwt.UnitTestNoAction.given as givenNoAction
+import io.github.ludorival.kotlintdd.SimpleGivenWhenThen.given as givenNoAction
 
 internal class GivenWhenThenTest {
 

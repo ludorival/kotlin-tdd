@@ -4,6 +4,7 @@ import io.github.ludorival.kotlintdd.act
 import io.github.ludorival.kotlintdd.assert
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import io.github.ludorival.kotlintdd.SimpleAssumeActAssert.assume as assumeNoAction
 
 internal class AssumeActAssertTest {
 
@@ -180,5 +181,17 @@ internal class AssumeActAssertTest {
             )
         }
     }
+
+    @Test
+    fun `I can use a pattern without defining an action`() {
+        assumeNoAction {
+            1
+        } act {
+            it.result * 3
+        } assert {
+            assertEquals(3, it.result)
+        }
+    }
+
 
 }

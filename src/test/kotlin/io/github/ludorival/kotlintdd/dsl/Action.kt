@@ -1,8 +1,8 @@
 package io.github.ludorival.kotlintdd.dsl
 
-import io.github.ludorival.kotlintdd.Context
+import io.github.ludorival.kotlintdd.WithContext
 
-class Action(private val context: Context<*>) {
+class Action : WithContext() {
 
     fun sum(value1: Int, value2: Int) = value1 + value2
 
@@ -13,5 +13,5 @@ class Action(private val context: Context<*>) {
 
     val `I add the last item into my todo list`
         get() =
-            context.last<TodoList>().items.add(context.last())
+            currentContext.last<TodoList>().items.add(currentContext.last())
 }

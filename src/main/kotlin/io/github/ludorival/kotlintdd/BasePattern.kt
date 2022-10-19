@@ -1,13 +1,13 @@
 package io.github.ludorival.kotlintdd
 
 
-abstract class BasePattern<R1, R2, R3>(
-    private val assumption: R1? = null,
-    private val action: R2? = null,
-    private val assertion: R3? = null
+abstract class BasePattern<R1 : WithContext, R2 : WithContext, R3 : WithContext>(
+    private val assumption: R1,
+    private val action: R2,
+    private val assertion: R3
 ) {
 
-    class AssumptionContext<T, R1, R2, R3> internal constructor(
+    class AssumptionContext<T, R1 : WithContext, R2 : WithContext, R3 : WithContext> internal constructor(
         private val pattern: BasePattern<R1, R2, R3>,
         key: String,
         result: T
@@ -27,7 +27,7 @@ abstract class BasePattern<R1, R2, R3>(
 
     }
 
-    class ActContext<T, R1, R2, R3> internal constructor(
+    class ActContext<T, R1 : WithContext, R2 : WithContext, R3 : WithContext> internal constructor(
         private val pattern: BasePattern<R1, R2, R3>,
         key: String,
         result: T
@@ -42,7 +42,7 @@ abstract class BasePattern<R1, R2, R3>(
 
     }
 
-    class AssertContext<T, R1, R2, R3> internal constructor(
+    class AssertContext<T, R1 : WithContext, R2 : WithContext, R3 : WithContext> internal constructor(
         private val pattern: BasePattern<R1, R2, R3>,
         key: String,
         result: T
@@ -54,9 +54,9 @@ abstract class BasePattern<R1, R2, R3>(
 
     }
 
-    open fun <T> assumptionReceiver(context: Context<T>): R1 = assumption ?: error("Expect a valid assumption object")
-    open fun <T> actionReceiver(context: Context<T>): R2 = action ?: error("Expect a valid action object")
-    open fun <T> assertionReceiver(context: Context<T>): R3 = assertion ?: error("Expect a valid assertion object")
+    private fun <T> assumptionReceiver(context: Context<T>): R1 = assumption.apply { with(context) }
+    private fun <T> actionReceiver(context: Context<T>): R2 = action.apply { with(context) }
+    private fun <T> assertionReceiver(context: Context<T>): R3 = assertion.apply { with(context) }
 
 
     fun <V> assume(key: String, block: R1.() -> V): AssumptionContext<V, R1, R2, R3> =
