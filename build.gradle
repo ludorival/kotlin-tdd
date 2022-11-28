@@ -1,5 +1,5 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.7.20'
+    id 'org.jetbrains.kotlin.jvm' version '1.7.22'
     id 'maven-publish'
     id 'org.jetbrains.kotlinx.kover' version '0.4.4'
     id 'signing'
