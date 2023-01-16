@@ -126,9 +126,9 @@ fun `I should be able to insert a new item in my todo list`() {
     } and {
         Item("Eat banana")
     } `when` {
-        it.first<TodoList>().add(it.result)
+        first<TodoList>().add(it)
     } then {
-        assertTrue(it.first<TodoList>().contains(it.first<Item>()))
+        assertTrue(first<TodoList>().contains(first<Item>()))
     }
 }
 ```
@@ -207,9 +207,9 @@ fun `I can use the previous result`() {
     given {
         1
     } `when` {
-        it.result + 2 // result is 1
+        it + 2 // result is 1
     } then {
-        assertEquals(3, it.result) // result is 3
+        assertEquals(3, it) // result is 3
     }
 }
 ```
@@ -230,9 +230,9 @@ fun `I can access to the first result`() {
     } and {
         2
     } `when` {
-        it.first<Int>() + it.result // first<Int>() -> 1
+        first<Int>() + it // first<Int>() -> 1
     } then {
-        assertEquals(3, it.result) // result is 3
+        assertEquals(3, it) // result is 3
     }
 }
 ```
@@ -249,9 +249,9 @@ fun `I can access to the first result matching a predicate`() {
     } and {
         3
     } `when` {
-        it.first<Int> { it > 1 } + it.result // first<Int>{ it > 1 } -> 2
+        first<Int> { it > 1 } + it// first<Int>{ it > 1 } -> 2
     } then {
-        assertEquals(2 + 3, it.result) // result is 5
+        assertEquals(2 + 3, it) // result is 5
     }
 }
 ```
@@ -274,9 +274,9 @@ fun `I can access to the last integer result`() {
     } and {
         "a string"
     } `when` {
-        it.first<Int>() + it.last<Int>() // 1 + 2
+        first<Int>() + last<Int>() // 1 + 2
     } then {
-        assertEquals(3, it.result) // result is 3
+        assertEquals(3, it) // result is 3
     }
 }
 ```
@@ -293,16 +293,16 @@ fun `I can access to the last result matching a predicate`() {
     } and {
         3
     } `when` {
-        it.result + it.last<Int> { it < 3 } // 3 + 2
+        it + last<Int> { it < 3 } // 3 + 2
     } then {
-        assertEquals(3 + 2, it.result) // result is 5
+        assertEquals(3 + 2, it) // result is 5
     }
 }
 ```
 
 ## Get a result at given position (`get<T>`)
 
-If you know exactly in which step to get your result, you can use `get<T>(index)` to access it.
+If you know exactly in which step to get your result, you can use `get<T>(index)` to access
 
 Example
 
@@ -318,7 +318,7 @@ fun `I can access to a result thanks to its position`() {
     } and {
         3.5      // index 2
     } `when` {
-        println(it.get<String>(1)) // print "Hello"
+        println(get<String>(1)) // print "Hello"
     }
 }
 ```
@@ -341,9 +341,9 @@ fun `I can access to all integer results from top to bottom`() {
     } and {
         2
     } `when` {
-        it.results<Int>().reduce(Int::plus) // results -> [1, 2]
+        results<Int>().reduce(Int::plus) // results -> [1, 2]
     } then {
-        assertEquals(3, it.result)
+        assertEquals(3, it)
     }
 }
 ```
@@ -362,9 +362,9 @@ fun `I can access to all integer results from bottom to top`() {
     } and {
         2
     } `when` {
-        it.reversedRsults<Int>().reduce(Int::plus) // results -> [2, 1]
+        reversedRsults<Int>().reduce(Int::plus) // results -> [2, 1]
     } then {
-        assertEquals(3, it.result)
+        assertEquals(3, it)
     }
 }
 ```
@@ -385,9 +385,9 @@ fun test1() {
     } and {
         2
     } `when` {
-        action.sum(it.results) // 1 + 2
+        action.sum(results) // 1 + 2
     } then {
-        assertEquals(1 + 2, it.result)
+        assertEquals(1 + 2, it)
     }
 }
 
@@ -423,9 +423,9 @@ fun test1() {
     given {
         commonContext()
     } `when` {
-        action.sum(it.results) // 1 + 2
+        action.sum(results) // 1 + 2
     } then {
-        assertEquals(1 + 2, it.result)
+        assertEquals(1 + 2, it)
     }
 }
 
@@ -436,9 +436,9 @@ fun test2() {
     } and {
         3
     } `when` {
-        action.sum(it.results) // 1 + 2 + 3
+        action.sum(results) // 1 + 2 + 3
     } then {
-        assertEquals(1 + 2 + 3, it.result)
+        assertEquals(1 + 2 + 3, it)
     }
 }
 ```
@@ -530,9 +530,9 @@ fun `I should be able to insert a new item in my todo list`() {
     } and {
         Item("Eat banana")
     } `when` {
-        it.first<TodoList>().add(it.result)
+        first<TodoList>().add(it)
     } then {
-        assertTrue(it.first<TodoList>().contains(it.first<Item>()))
+        assertTrue(first<TodoList>().contains(first<Item>()))
     }
 }
 ```
@@ -567,16 +567,16 @@ class Assumption : WithContext() {
 // Action.kt
 class Action : WithContext() {
     val `I add the last item into my todo list`
-        get() = // currentContext allows you to get the current context
-            currentContext.last<TodoList>().items.add(currentContext.last())
+        get() =
+            last<TodoList>().items.add(last())
 }
 
 // Assertion.kt
 class Assertion : WithContext() {
     val `I expect this item is present in my todo list`
         get() = Assertions.assertTrue {
-            currentContext.last<TodoList>().items.contains(
-                currentContext.last()
+            last<TodoList>().items.contains(
+                last()
             )
         }
 }

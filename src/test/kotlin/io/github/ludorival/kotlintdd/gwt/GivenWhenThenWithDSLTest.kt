@@ -1,7 +1,7 @@
 package io.github.ludorival.kotlintdd.gwt
 
-import io.github.ludorival.kotlintdd.`when`
 import io.github.ludorival.kotlintdd.then
+import io.github.ludorival.kotlintdd.`when`
 import org.junit.jupiter.api.Test
 
 class GivenWhenThenWithDSLTest {
@@ -13,9 +13,9 @@ class GivenWhenThenWithDSLTest {
         } and {
             `the number`(2)
         } `when` {
-            sum(it.results())
+            sum(results())
         } then {
-            it.result `should be equal to` 3
+            it `should be equal to` 3
         }
     }
 

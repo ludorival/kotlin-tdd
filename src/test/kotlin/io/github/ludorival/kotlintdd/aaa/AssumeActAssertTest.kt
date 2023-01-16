@@ -14,15 +14,15 @@ internal class AssumeActAssertTest {
         assume {
             1
         } act {
-            sum(it.result, 2)
+            sum(it, 2)
         } assert {
-            3 `should be equal to` it.result
+            3 `should be equal to` it
         } and {
 
             """
                 ASSUME -> 1
                 ACT -> 3
-                ASSERT -> *Something*""".trimIndent() `should be equal to` it.toString()
+                ASSERT -> *Something*""".trimIndent() `should be equal to` toString()
 
         }
     }
@@ -34,15 +34,15 @@ internal class AssumeActAssertTest {
         } and {
             2
         } act {
-            sum(it.first(), it.last())
+            sum(first(), last())
         } assert {
-            it.result `should be equal to` 3
+            it `should be equal to` 3
         } and {
             """
                 ASSUME -> 1
                 AND -> 2
                 ACT -> 3
-                ASSERT -> *Something*""".trimIndent() `should be equal to` it.toString()
+                ASSERT -> *Something*""".trimIndent() `should be equal to` toString()
         }
     }
 
@@ -52,12 +52,12 @@ internal class AssumeActAssertTest {
         act {
             sum(1, 2)
         } assert {
-            assertEquals(it.result, 3)
+            assertEquals(it, 3)
         } and {
             assertEquals(
                 """
                 ACT -> 3
-                ASSERT -> *Something*""".trimIndent(), it.toString()
+                ASSERT -> *Something*""".trimIndent(), toString()
             )
         }
     }
@@ -70,9 +70,9 @@ internal class AssumeActAssertTest {
         } and {
             4
         } act {
-            sum(it.results())
+            sum(results())
         } assert {
-            assertEquals(it.result, 1 + 2 + 3 + 4)
+            assertEquals(it, 1 + 2 + 3 + 4)
         } and {
             assertEquals(
                 """
@@ -81,7 +81,7 @@ internal class AssumeActAssertTest {
                 AND -> 3
                 AND -> 4
                 ACT -> 10
-                ASSERT -> *Something*""".trimIndent(), it.toString()
+                ASSERT -> *Something*""".trimIndent(), toString()
             )
         }
     }
@@ -93,9 +93,9 @@ internal class AssumeActAssertTest {
         } and {
             someUseCaseWithoutExtension()
         } act {
-            sum(it.results())
+            sum(results())
         } assert {
-            assertEquals(it.result, 4 + 1 + 2 + 3)
+            assertEquals(it, 4 + 1 + 2 + 3)
         } and {
             assertEquals(
                 """
@@ -104,7 +104,7 @@ internal class AssumeActAssertTest {
                 AND -> 2
                 AND -> 3
                 ACT -> 10
-                ASSERT -> *Something*""".trimIndent(), it.toString()
+                ASSERT -> *Something*""".trimIndent(), toString()
             )
         }
     }
@@ -116,9 +116,9 @@ internal class AssumeActAssertTest {
         } and {
             someNestedUseCaseWithoutExtension()
         } act {
-            sum(it.results())
+            sum(results())
         } assert {
-            assertEquals(4 + 5 + 1 + 2 + 3 + 6, it.result)
+            assertEquals(4 + 5 + 1 + 2 + 3 + 6, it)
         } and {
             assertEquals(
                 """
@@ -129,7 +129,7 @@ internal class AssumeActAssertTest {
                 AND -> 3
                 AND -> 6
                 ACT -> 21
-                ASSERT -> *Something*""".trimIndent(), it.toString()
+                ASSERT -> *Something*""".trimIndent(), toString()
             )
         }
     }
@@ -141,9 +141,9 @@ internal class AssumeActAssertTest {
         } and {
             someUseCaseWithoutExtension()
         } act {
-            sum(it.results())
+            sum(results())
         } assert {
-            assertEquals(it.result, 4 + 1 + 2 + 3)
+            assertEquals(it, 4 + 1 + 2 + 3)
         } and {
             assertEquals(
                 """
@@ -152,7 +152,7 @@ internal class AssumeActAssertTest {
                 AND -> 2
                 AND -> 3
                 ACT -> 10
-                ASSERT -> *Something*""".trimIndent(), it.toString()
+                ASSERT -> *Something*""".trimIndent(), toString()
             )
         }
     }
@@ -164,9 +164,9 @@ internal class AssumeActAssertTest {
         } and {
             someNestedUseCaseWithoutExtension()
         } act {
-            sum(it.results())
+            sum(results())
         } assert {
-            assertEquals(4 + 5 + 1 + 2 + 3 + 6, it.result)
+            assertEquals(4 + 5 + 1 + 2 + 3 + 6, it)
         } and {
             assertEquals(
                 """
@@ -177,7 +177,7 @@ internal class AssumeActAssertTest {
                 AND -> 3
                 AND -> 6
                 ACT -> 21
-                ASSERT -> *Something*""".trimIndent(), it.toString()
+                ASSERT -> *Something*""".trimIndent(), toString()
             )
         }
     }
@@ -187,9 +187,9 @@ internal class AssumeActAssertTest {
         assumeNoAction {
             1
         } act {
-            it.result * 3
+            it * 3
         } assert {
-            assertEquals(3, it.result)
+            assertEquals(3, it)
         }
     }
 

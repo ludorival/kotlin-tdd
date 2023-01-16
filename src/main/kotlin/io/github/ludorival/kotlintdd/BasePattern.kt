@@ -1,7 +1,7 @@
 package io.github.ludorival.kotlintdd
 
 
-abstract class BasePattern<R1 : WithContext, R2 : WithContext, R3 : WithContext>(
+open class BasePattern<R1 : WithContext, R2 : WithContext, R3 : WithContext>(
     private val assumption: R1,
     private val action: R2,
     private val assertion: R3
@@ -16,14 +16,14 @@ abstract class BasePattern<R1 : WithContext, R2 : WithContext, R3 : WithContext>
         Context<T>(result, key) {
 
 
-        internal fun <V> chainAct(key: String, block: R2.(Context<T>) -> V) =
-            chain(ActContext(pattern, key, pattern.actionReceiver(this).block(this)))
+        internal fun <V> chainAct(key: String, block: R2.(T) -> V) =
+            chain(ActContext(pattern, key, pattern.actionReceiver(this).block(result)))
 
-        infix fun <V> and(block: R1.(Context<T>) -> V): AssumptionContext<V, R1, R2, R3> =
-            chain(AssumptionContext(pattern, "AND", pattern.assumptionReceiver(this).block(this)))
+        infix fun <V> and(block: R1.(T) -> V): AssumptionContext<V, R1, R2, R3> =
+            chain(AssumptionContext(pattern, "AND", pattern.assumptionReceiver(this).block(result)))
 
-        internal fun <V> chainAssert(key: String, block: R3.(Context<T>) -> V) =
-            chain(AssertContext(pattern, key, pattern.assertionReceiver(this).block(this)))
+        internal fun <V> chainAssert(key: String, block: R3.(T) -> V) =
+            chain(AssertContext(pattern, key, pattern.assertionReceiver(this).block(result)))
 
     }
 
@@ -34,11 +34,11 @@ abstract class BasePattern<R1 : WithContext, R2 : WithContext, R3 : WithContext>
 
     ) :
         Context<T>(result, key) {
-        infix fun <V> and(block: R2.(Context<T>) -> V): ActContext<V, R1, R2, R3> =
-            chain(ActContext(pattern, "AND", pattern.actionReceiver(this).block(this)))
+        infix fun <V> and(block: R2.(T) -> V): ActContext<V, R1, R2, R3> =
+            chain(ActContext(pattern, "AND", pattern.actionReceiver(this).block(result)))
 
-        internal fun <V> chainAssert(key: String, block: R3.(Context<T>) -> V) =
-            chain(AssertContext(pattern, key, pattern.assertionReceiver(this).block(this)))
+        internal fun <V> chainAssert(key: String, block: R3.(T) -> V) =
+            chain(AssertContext(pattern, key, pattern.assertionReceiver(this).block(result)))
 
     }
 
@@ -49,8 +49,8 @@ abstract class BasePattern<R1 : WithContext, R2 : WithContext, R3 : WithContext>
 
     ) :
         Context<T>(result, key) {
-        infix fun <V> and(block: R3.(Context<T>) -> V): AssertContext<V, R1, R2, R3> =
-            chain(AssertContext(pattern, "AND", pattern.assertionReceiver(this).block(this)))
+        infix fun <V> and(block: R3.(T) -> V): AssertContext<V, R1, R2, R3> =
+            chain(AssertContext(pattern, "AND", pattern.assertionReceiver(this).block(result)))
 
     }
 
