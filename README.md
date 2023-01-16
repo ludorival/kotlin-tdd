@@ -53,6 +53,33 @@ class MyTest {
 }
 ````
 
+## Coroutine support
+
+> The library supports also **coroutine** functions.
+
+````kotlin
+import io.github.ludorival.kotlintdd.coroutine.CoSimpleGivenWhenThen.given
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class MyTest {
+
+    @Test
+    fun `I can write my Coroutine test with my custom DSL`() = runTest {
+        given {
+            1
+        } and {
+            2
+        } `when` {
+            `I perform their sum`
+        } then {
+            `I expect the result is`(3)
+        }
+    }
+
+}
+````
 # Getting started
 
 Kotlin-TDD is available via Maven Central. Just add the dependency to your Maven POM or Gradle build config.
