@@ -5,6 +5,7 @@ plugins {
     id 'signing'
     id 'io.github.gradle-nexus.publish-plugin' version "1.1.0"
     id 'com.palantir.git-version' version '0.15.0'
+    id 'org.jreleaser' version '1.15.0'
 }
 
 group 'io.github.ludorival'
@@ -62,13 +63,7 @@ publishing {
     }
     repositories {
         maven {
-            name = "OSSRH"
-            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            credentials {
-                username = findProperty("maven.username") ?: System.getenv("OSSRH_USERNAME")
-                password = findProperty("maven.password") ?: System.getenv("OSSRH_GPG_SECRET_KEY_PASSWORD")
-            }
-
+            url = uri("$buildDir/staging-deploy")
         }
     }
 }
@@ -76,16 +71,7 @@ publishing {
 signing {
     sign publishing.publications.mavenJava
 }
-nexusPublishing {
-    repositories {
-        sonatype {
-            username = findProperty("maven.username") ?: System.getenv("OSSRH_USERNAME")
-            password = findProperty("maven.password") ?: System.getenv("OSSRH_GPG_SECRET_KEY_PASSWORD")
-            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
-            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
-        }
-    }
-}
+
 
 javadoc {
     if(JavaVersion.current().isJava9Compatible()) {
@@ -113,4 +99,26 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.1'
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.1'
+}
+
+jreleaser {
+    signing {
+        active = 'ALWAYS'
+        armored = true
+    }
+
+    deploy {
+        maven {
+            mavenCentral {
+                sonatype {
+                    applyMavenCentralRules = true
+                    password = findProperty('maven.password') ?: System.getenv('MAVEN_CENTRAL_PASSWORD')
+                    username = findProperty('maven.username') ?: System.getenv('MAVEN_CENTRAL_USERNAME')
+                    active = 'ALWAYS'
+                    url = 'https://s01.oss.sonatype.org/service/local/'
+                    stagingRepository('build/staging-deploy')
+                }
+            }
+        }
+    }
 }
