@@ -389,7 +389,7 @@ fun `I can access to all integer results from bottom to top`() {
     } and {
         2
     } `when` {
-        reversedRsults<Int>().reduce(Int::plus) // results -> [2, 1]
+        reversedResults<Int>().reduce(Int::plus) // results -> [2, 1]
     } then {
         assertEquals(3, it)
     }
@@ -477,7 +477,7 @@ fun test2() {
 
 ## Use your custom DSL
 
-Kotlin-TDD allows to have access to an *Assumption*, *Action* and * Assertion* instance in each step. This is very
+Kotlin-TDD allows to have access to an *Assumption*, *Action* and *Assertion* instance in each step. This is very
 convenient to organize your tests in function of what it produces. Let's create a new class Assumption for example
 
 ```kotlin
