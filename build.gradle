@@ -96,6 +96,25 @@ dependencies {
 }
 
 jreleaser {
+    project {
+        name = 'kotlin-tdd'
+        description = 'A Kotlin library for Test-Driven Development'
+        longDescription = '''
+            A Kotlin library that provides utilities and patterns 
+            for practicing Test-Driven Development effectively
+        '''
+        authors = ['Ludovic Dorival']
+        license = 'MIT License'
+        copyright = 'Copyright (c) 2024 Ludovic Dorival'
+        links {
+            homepage = 'https://github.com/ludorival/kotlin-tdd'
+        }
+        java {
+            groupId = 'io.github.ludorival'
+            artifactId = 'kotlin-tdd'
+            version = project.version
+        }
+    }
     signing {
         active = 'ALWAYS'
         armored = true
