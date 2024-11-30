@@ -78,14 +78,8 @@ repositories {
 test {
     useJUnitPlatform()
 }
-
-tasks.koverVerify {
-    rule {
-        name = "Minimal line coverage rate in percents"
-        bound {
-            minValue = 93
-        }
-    }
+kover.reports.verify.rule {
+    minBound(93)
 }
 
 dependencies {
