@@ -1,7 +1,6 @@
 Kotlin Test Driven Design
 =========================
-![Build status](https://github.com/ludorival/kotlin-tdd/actions/workflows/build.yaml/badge.svg)
-![Publish status](https://github.com/ludorival/kotlin-tdd/actions/workflows/publish.yaml/badge.svg)
+![Build status](https://github.com/ludorival/kotlin-tdd/actions/workflows/main.yaml/badge.svg)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/ludorival/kotlin-tdd)
 > Lightweight library suggesting a TDD implementation with Kotlin
 
@@ -9,7 +8,7 @@ Kotlin-TDD provides a way to write your unit test (or acceptance test)
 as you will write an acceptance criteria in natural english language.
 
 Write your test by following the Given When Then pattern.
-
+m
 ````kotlin
 import io.github.ludorival.kotlintdd.SimpleGivenWhenThen.given
 
