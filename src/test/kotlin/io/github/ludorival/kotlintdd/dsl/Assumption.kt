@@ -1,8 +1,8 @@
 package io.github.ludorival.kotlintdd.dsl
 
-import io.github.ludorival.kotlintdd.WithContext
+import io.github.ludorival.kotlintdd.Step
 
-class Assumption : WithContext() {
+class Assumption : Step() {
 
     val one get() = 1
 

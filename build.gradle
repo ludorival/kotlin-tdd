@@ -103,11 +103,6 @@ jreleaser {
         links {
             homepage = 'https://github.com/ludorival/kotlin-tdd'
         }
-        java {
-            groupId = 'io.github.ludorival'
-            artifactId = 'kotlin-tdd'
-            version = project.version
-        }
     }
     signing {
         active = 'ALWAYS'

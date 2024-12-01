@@ -1,13 +1,13 @@
 package io.github.ludorival.kotlintdd
 
 
-open class BasePattern<R1 : WithContext, R2 : WithContext, R3 : WithContext>(
+open class BasePattern<R1 : Step, R2 : Step, R3 : Step>(
     private val assumption: R1,
     private val action: R2,
     private val assertion: R3
 ) {
 
-    class AssumptionContext<T, R1 : WithContext, R2 : WithContext, R3 : WithContext> internal constructor(
+    class AssumptionContext<T, R1 : Step, R2 : Step, R3 : Step> internal constructor(
         private val pattern: BasePattern<R1, R2, R3>,
         key: String,
         result: T
@@ -27,7 +27,7 @@ open class BasePattern<R1 : WithContext, R2 : WithContext, R3 : WithContext>(
 
     }
 
-    class ActContext<T, R1 : WithContext, R2 : WithContext, R3 : WithContext> internal constructor(
+    class ActContext<T, R1 : Step, R2 : Step, R3 : Step> internal constructor(
         private val pattern: BasePattern<R1, R2, R3>,
         key: String,
         result: T
@@ -42,7 +42,7 @@ open class BasePattern<R1 : WithContext, R2 : WithContext, R3 : WithContext>(
 
     }
 
-    class AssertContext<T, R1 : WithContext, R2 : WithContext, R3 : WithContext> internal constructor(
+    class AssertContext<T, R1 : Step, R2 : Step, R3 : Step> internal constructor(
         private val pattern: BasePattern<R1, R2, R3>,
         key: String,
         result: T

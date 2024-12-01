@@ -1,9 +1,9 @@
 package io.github.ludorival.kotlintdd.coroutine
 
-import io.github.ludorival.kotlintdd.WithContext
+import io.github.ludorival.kotlintdd.Step
 
 @Suppress("FunctionNaming")
-abstract class CoGivenWhenThen<R1 : WithContext, R2 : WithContext, R3 : WithContext>(
+abstract class CoGivenWhenThen<R1 : Step, R2 : Step, R3 : Step>(
     assumption: R1,
     action: R2,
     assertion: R3
@@ -13,21 +13,21 @@ abstract class CoGivenWhenThen<R1 : WithContext, R2 : WithContext, R3 : WithCont
 }
 
 object CoSimpleGivenWhenThen :
-    CoGivenWhenThen<WithContext, WithContext, WithContext>(WithContext(), WithContext(), WithContext())
+    CoGivenWhenThen<Step, Step, Step>(Step(), Step(), Step())
 
 @Suppress("FunctionNaming")
-suspend infix fun <T, V, R1 : WithContext, R2 :
-WithContext, R3 : WithContext> CoBasePattern.AssumptionContext<T, R1, R2, R3>.`when`(
+suspend infix fun <T, V, R1 : Step, R2 :
+Step, R3 : Step> CoBasePattern.AssumptionContext<T, R1, R2, R3>.`when`(
     block: suspend R2.(T) -> V
 ) =
     chainAct("WHEN", block)
 
-suspend infix fun <T, V, R1 : WithContext, R2 : WithContext,
-    R3 : WithContext> CoBasePattern.ActContext<T, R1, R2, R3>.then(block: suspend R3.(T) -> V) =
+suspend infix fun <T, V, R1 : Step, R2 : Step,
+    R3 : Step> CoBasePattern.ActContext<T, R1, R2, R3>.then(block: suspend R3.(T) -> V) =
     chainAssert("THEN", block)
 
-suspend infix fun <T, V, R1 : WithContext, R2 : WithContext,
-    R3 : WithContext> CoBasePattern.AssumptionContext<T, R1, R2, R3>.then(
+suspend infix fun <T, V, R1 : Step, R2 : Step,
+    R3 : Step> CoBasePattern.AssumptionContext<T, R1, R2, R3>.then(
     block: suspend R3.(T) -> V
 ) =
     chainAssert("THEN", block)
