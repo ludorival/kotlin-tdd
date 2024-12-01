@@ -1,6 +1,7 @@
 Kotlin Test Driven Design
 =========================
-![Build status](https://github.com/ludorival/kotlin-tdd/actions/workflows/main.yaml/badge.svg)
+![Build status](https://github.com/ludorival/kotlin-tdd/actions/workflows/build.yaml/badge.svg)
+![Publish status](https://github.com/ludorival/kotlin-tdd/actions/workflows/publish.yaml/badge.svg)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/ludorival/kotlin-tdd)
 > Lightweight library suggesting a TDD implementation with Kotlin
 
@@ -8,7 +9,7 @@ Kotlin-TDD provides a way to write your unit test (or acceptance test)
 as you will write an acceptance criteria in natural english language.
 
 Write your test by following the Given When Then pattern.
-m
+
 ````kotlin
 import io.github.ludorival.kotlintdd.SimpleGivenWhenThen.given
 
@@ -476,44 +477,75 @@ fun test2() {
 
 ## Use your custom DSL
 
-Kotlin-TDD allows to have access to an *Assumption*, *Action* and *Assertion* instance in each step. This is very
-convenient to organize your tests in function of what it produces. Let's create a new class Assumption for example
+Kotlin-TDD allows to have access to your own *Assumption*, *Action* and *Assertion* instance in each step. This is very
+convenient to organize your tests in function of what it produces. 
+
+Let's say you have the following interface defining the core functionnality of your application you are currently building :
+
 
 ```kotlin
-
-class Assumption : WithContext() {
-
-    val `a todo list` get() = TodoList()
-
-    fun `an item`(name: String) = TodoList.Item(name)
+interface API {
+    fun createTodoList(): TodoList
+    fun createItem(name: String): Item
+    fun addItem(todoList: TodoList, item: Item): TodoList
 }
-
 ```
 
-An Action class
 
-````kotlin
-class Action : WithContext() {
+This interface provides methods to create a new todo list, create a new item, and add an item to an existing todo list. 
 
-    fun sum(value1: Int, value2: Int) = value1 + value2
+- Let's create a new class Assumption that will contain operations inside Given step:
 
-    fun sum(list: List<Int>) = list.reduce(Int::plus)
+```kotlin
+class Assumption(private val api: API) : Step() {
+	val `a todo list` get() = api.createTodo()
 
-    fun divide(list: List<Int>) = list.reduce(Int::div)
-
+    fun `an item`(name: String) = api.createItem(name)
 }
-````
+```
+> Note that we are reusing the interface API defined above.
 
-And an Assumption class
+- Create an Action class that will contain all possible operations inside the When step:
 
-According to your flavor (GWT or AAA pattern), you will have to implement a dedicated interface.
+```kotlin
+class Action(private val api: API) : Step() {
 
+  val `I add the last item into my todo list` get() = api.addItem(
+    first<TodoList>(), 
+    last<Item>()
+  )
+}
+```
+
+- Create an Assertion class for all possible operations inside Then step: 
+
+```kotlin
+class Assertion : Step() {
+    val `I expect this item is present in my todo list`
+        get() = Assertions.assertTrue {
+            first<TodoList>().items.contains(
+                last<Item>()
+            )
+        }
+}
+```
 **Given When Then**
+Create a file named UnitTest.kt for example and extends the class GivenWhenThen:
 
-Create a file named `UnitTest.kt` for example and extends the class `GivenWhenThen`:
+```kotlin 
+// src/test/kotlin/com/example/kotlintdd/UnitTest.kt
+package com.example.kotlintdd
+// Implement Test API
+val api = object: API {
+  override fun createTodoList() = TodoList()
 
-````kotlin
-// UnitTest.kt
+    override fun createItem(name: String) = Item(name)
+
+    override fun addItem(todoList: TodoList, item: Item) = todoList.apply { 
+    	add(item)
+    }
+}
+// Use GivenWhenThen Pattern
 object UnitTest : GivenWhenThen<Assumption, Action, Assertion>(
     assumption = Assumption(),
     action = Action(),
@@ -523,24 +555,33 @@ object UnitTest : GivenWhenThen<Assumption, Action, Assertion>(
 // defines the entrypoint on file-level to be automatically recognized by your IDE
 fun <R> given(block: Assumption.() -> R) = UnitTest.given(block)
 fun <R> `when`(block: Action.() -> R) = UnitTest.`when`(block)
-````
+```
+
 
 **Assume Act Assert**
-
-This time you will have to extend the class `AssumeActAssert`:
+Or if you want to use Assume Act Assert Pattern, this time you will have to extend the class `AssumeActAssert`:
 
 ````kotlin
 // UnitTest.kt
+// Implement Test API
+val api = object: API {
+  override fun createTodoList() = TodoList()
 
+    override fun createItem(name: String) = Item(name)
+
+    override fun addItem(todoList: TodoList, item: Item) = todoList.apply { 
+    	add(item)
+    }
+}
 object UnitTest : AssumeActAssert<Assumption, Action, Assertion>(
-    assumption = Assumption(),
-    action = Action(),
+    assumption = Assumption(api),
+    action = Action(api),
     assertion = Assertion()
 )
 
 // defines the entrypoint on file-level to be automatically recognized by your IDE
-fun <R> assume(block: AAAContext<Action, Unit>.() -> R) = UnitTest.assume(block)
-fun <R> act(block: AAAContext<Action, Unit>.() -> R) = UnitTest.act(block)
+fun <R> assume(block: Assumption.() -> R) = UnitTest.assume(block)
+fun <R> act(block: Action.() -> R) = UnitTest.act(block)
 ````
 
 In the various examples we saw, the step do not write in a natural language. Thanks to powerful extendability of Kotlin,
@@ -584,21 +625,21 @@ And your DSL can be written like this
 
 ````kotlin
 // Assumption.kt
-class Assumption : WithContext() {
+class Assumption : Step() {
     val `a todo list` get() = TodoList()
 
     fun `an item`(name: String) = Item(name)
 }
 
 // Action.kt
-class Action : WithContext() {
+class Action : Step() {
     val `I add the last item into my todo list`
         get() =
             last<TodoList>().items.add(last())
 }
 
 // Assertion.kt
-class Assertion : WithContext() {
+class Assertion : Step() {
     val `I expect this item is present in my todo list`
         get() = Assertions.assertTrue {
             last<TodoList>().items.contains(
@@ -608,6 +649,22 @@ class Assertion : WithContext() {
 }
 
 ````
+
+# Migrate from v1 to v2
+In version 2, the DSL has been improved for better readability and usability, especially when you are using your own custom DSL.
+
+Replace all extensions of GWTContext like
+```kotlin
+val GWTContext<*, *>.`I add the last item into my todo list` get() = 
+    first<TodoList>().add(last<Item>())
+```
+
+to
+
+```kotlin
+val Step.`I add the last item into my todo list` get() = 
+    first<TodoList>().add(last<Item>())
+```
 
 # License
 

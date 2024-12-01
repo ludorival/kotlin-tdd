@@ -1,8 +1,8 @@
 package io.github.ludorival.kotlintdd.dsl
 
-import io.github.ludorival.kotlintdd.WithContext
+import io.github.ludorival.kotlintdd.Step
 @Suppress("VariableNaming")
-class Action : WithContext() {
+class Action : Step() {
 
     fun sum(value1: Int, value2: Int) = value1 + value2
 
