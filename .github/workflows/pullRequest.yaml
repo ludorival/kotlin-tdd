@@ -8,7 +8,6 @@ on:
 permissions:
   checks: write
   contents: read
-  pull-requests: write
 
 jobs:
   build:
@@ -27,7 +26,7 @@ jobs:
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@f9c9c575b8b21b6485636a91ffecd10e558c62f6
       - name: Build with Gradle
-        run: ./gradlew build koverXmlReport --stacktrace
+        run: ./gradlew build --stacktrace
 
       - name: Test Report
         uses: dorny/test-reporter@v1
@@ -37,15 +36,3 @@ jobs:
           path: "build/test-results/test/*.xml"
           reporter: java-junit
           fail-on-error: true
-      - name: Add coverage report to PR
-        id: kover
-        uses: mi-kas/kover-report@v1
-        with:
-          path: |
-            ${{ github.workspace }}/build/reports/kover/report.xml
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: Code Coverage
-          update-comment: true
-          min-coverage-overall: 80
-          min-coverage-changed-files: 80
-          coverage-counter-type: LINE
