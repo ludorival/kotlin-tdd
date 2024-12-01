@@ -47,12 +47,7 @@ jobs:
           path: "build/test-results/test/*.xml"
           reporter: java-junit
           fail-on-error: true
-      - name: Upload Kover Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: kover-report
-          path: build/reports/kover/
-          
+
   create-release:
     needs: build
     runs-on: ubuntu-latest

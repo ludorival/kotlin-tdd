@@ -36,8 +36,14 @@ jobs:
           path: "build/test-results/test/*.xml"
           reporter: java-junit
           fail-on-error: true
-      - name: Upload Kover Report
-        uses: actions/upload-artifact@v3
+      - name: Add coverage report to PR
+        id: kover
+        uses: mi-kas/kover-report@v1
         with:
-          name: kover-report
-          path: build/reports/kover/
+          path: |
+            ${{ github.workspace }}/build/reports/kover/report.xml
+          title: Code Coverage
+          update-comment: true
+          min-coverage-overall: 80
+          min-coverage-changed-files: 80
+          coverage-counter-type: LINE
